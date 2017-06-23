@@ -25,22 +25,17 @@ export class OpentokService {
     this._apiKey = "45897242"
   }
 
-  initCaller(sessionId: string, token: string, publisherTag?: string, subscriberTag?: string) {
+  connectToSession(sessionId: string, token: string, publisherTag?: string, subscriberTag?: string) {
     if (publisherTag) this._publisherTag = publisherTag;
     if (subscriberTag) this._subscriberTag = subscriberTag;
     return this._connectToSession(sessionId, token);
   }
 
-  initRecipient(sessionId: string, token: string, publisherTag?: string, subscriberTag?: string) {
-    if (publisherTag) this._publisherTag = publisherTag;
-    if (subscriberTag) this._subscriberTag = subscriberTag;
-    return this._connectToSession(sessionId, token);
 
+
+  call() {
+    return this._publishStream();
   }
-
-  // call(onMediaRequested?: () => void, onMediaDenied?: () => void) {
-  //   return this._publishStream(onMediaRequested, onMediaDenied);
-  // }
   //
   // hangUp(onComplete?: () => void) {
   //   this._disconnect();
@@ -118,36 +113,38 @@ export class OpentokService {
     return this._session.connect(token);
   }
 
-  // private _publishStream(onMediaRequested?: () => void, onMediaDenied?: () => void) {
-  //   let publisherProperties = {
-  //     insertMode: 'append',
-  //     width: '100%',
-  //     height: '100%',
-  //     usePreviousDeviceSelection: true
-  //   };
-  //
-  //   this._publisher = OTPublisher.init(this._publisherTag, publisherProperties);
-  //   this._subscribeToOpenMediaAccessDialog(onMediaRequested);
-  //   this._subscribeToMediaAccessDenied(onMediaDenied);
-  //   return this._session.publish(this._publisher.opentokPublisher);
-  // }
-  //
-  // private _disconnect() {
-  //   if (this._session) {
-  //     this._session.off();
-  //     this._session.disconnect();
-  //     this._session = null;
-  //   }
-  //   if (this._publisher) {
-  //     this._publisher.off();
-  //     this._publisher.destroy();
-  //     this._publisher = null;
-  //   }
-  //   if (this._subscriber) {
-  //     this._subscriber = null;
-  //   }
-  // }
-  //
+  private _publishStream() {
+    return this._session.publish(this._publisher);
+  }
+
+  initPublisher(){
+    let publisherProperties = {
+      insertMode: 'append',
+      width: '100%',
+      height: '100%',
+      usePreviousDeviceSelection: true
+    };
+
+    this._publisher = OTPublisher.init(this._publisherTag, publisherProperties);
+  }
+
+
+  private _disconnect() {
+    if (this._session) {
+      this._session.off();
+      this._session.disconnect();
+      this._session = null;
+    }
+    if (this._publisher) {
+      this._publisher.off();
+      this._publisher.destroy();
+      this._publisher = null;
+    }
+    if (this._subscriber) {
+      this._subscriber = null;
+    }
+  }
+
   // private _subscribeToCreatedStreams(onComplete ?: (event) => void) {
   //   if (this._session) {
   //     var subscriberProperties = {
@@ -206,19 +203,17 @@ export class OpentokService {
   //   this._session.on(SESSION_EVENTS.streamPropertyChanged).;
   // }
   //
-  // private _subscribeToOpenMediaAccessDialog(onComplete ?: (event) => void) {
-  //   var eventHandler = (event) => {
-  //     if (onComplete) onComplete(event);
-  //   };
-  //   this._publisher.on(PUBLISHER_EVENTS.accessDialogOpened);
-  // }
-  //
-  // private _subscribeToMediaAccessDenied(onComplete ?: (event) => void) {
-  //   var eventHandler = (event) => {
-  //     this._disconnect();
-  //     if (onComplete) onComplete(event);
-  //   };
-  //
-  //   this._publisher.on(PUBLISHER_EVENTS.accessDenied);
-  // }
+  onOpenMediaAccessDialog() {
+    return this._publisher.on(PUBLISHER_EVENTS.accessDialogOpened);
+  }
+
+  onMediaAccessDenied() {
+    return this._publisher.on(PUBLISHER_EVENTS.accessDenied).do(()=>{
+      this._disconnect();
+    });
+  }
+
+  onStreamAvailable(){
+    return this._publisher.on(PUBLISHER_EVENTS.accessAllowed);
+  }
 }

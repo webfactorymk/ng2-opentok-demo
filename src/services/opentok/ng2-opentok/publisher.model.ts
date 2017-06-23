@@ -30,9 +30,9 @@ export class OTPublisher extends OTModel {
     this.opentokPublisher = opentokPublisher;
   }
 
-  static init(publisherContainer?: string, properties?: {}, completionHandler?: (error: any) => void): OTPublisher {
+  static init(publisherContainer?: string, properties?: {}): OTPublisher {
     //https://tokbox.com/developer/sdks/js/reference/OT.html#initPublisher
-    return new OTPublisher(OT.initPublisher(publisherContainer, properties, completionHandler));
+    return new OTPublisher(OT.initPublisher(publisherContainer, properties));
   }
 
   getAccessAllowed(): boolean {
