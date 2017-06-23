@@ -1,19 +1,12 @@
 import {Injectable} from "@angular/core";
-import {
-  OTSession,
-  SESSION_EVENTS,
-  SESSION_DISCONNECT_REASONS,
-  STREAM_PROPERTY_CHANGED
-} from "./ng2-opentok/session.model";
+import {OTSession, SESSION_EVENTS, SESSION_DISCONNECT_REASONS} from "./ng2-opentok/session.model";
 import {OTPublisher, PUBLISHER_EVENTS} from "./ng2-opentok/publisher.model";
-import {OTSignal} from "./ng2-opentok/signal.model";
-import {OTSubscriber, SUBSCRIBER_EVENTS} from "./ng2-opentok/subscriber.model";
-import {Observable} from "rxjs";
+import {OTSubscriber} from "./ng2-opentok/subscriber.model";
 
 @Injectable()
 export class OpentokService {
 
-  private _apiKey: string ;
+  private _apiKey: string;
   private _session: OTSession;
   private _publisher: OTPublisher;
   private _subscriber: OTSubscriber;
@@ -21,7 +14,7 @@ export class OpentokService {
   private _subscriberTag: string = "subscriber";
   private _isVideoActive: boolean = false;
 
-  constructor(){
+  constructor() {
     this._apiKey = "45897242"
   }
 
@@ -32,31 +25,31 @@ export class OpentokService {
   }
 
 
-
   call() {
     return this._publishStream();
   }
-  //
-  // hangUp(onComplete?: () => void) {
-  //   this._disconnect();
-  //   if (onComplete) onComplete();
-  // }
-  //
+
+
+  hangUp() {
+    this._disconnect();
+  }
+
   // onVideoChanged(callback?: (isActive: boolean) => void) {
   //   this._subscribeToVideoStreamChanges(callback);
   // }
-  //
-  // onIncomingCall(callback?: () => void) {
-  //   this._subscribeToCreatedStreams(callback);
-  // }
-  //
-  // onEndCall(callback?: () => void) {
-  //   this._subscribeToConnectionDestroyed(callback);
-  // }
-  //
-  // onNetworkFailedForPublisher(callback?: () => void) {
-  //   this._subscribeToSessionDisconnectedNetworkFailed(callback);
-  // }
+
+  onIncomingCall() {
+    console.log("Subscribe to stream created")
+    return this._onCreatedStreams();
+  }
+
+  onEndCall() {
+    return this._onConnectionDestroyed();
+  }
+
+  onNetworkFailedForPublisher() {
+    return this._onSessionDisconnectedNetworkFailed();
+  }
   //
   // takeSubscriberScreenshot() {
   //   return this._isVideoActive ? this._subscriber.getImageData() : null;
@@ -117,7 +110,7 @@ export class OpentokService {
     return this._session.publish(this._publisher);
   }
 
-  initPublisher(){
+  initPublisher() {
     let publisherProperties = {
       insertMode: 'append',
       width: '100%',
@@ -145,53 +138,34 @@ export class OpentokService {
     }
   }
 
-  // private _subscribeToCreatedStreams(onComplete ?: (event) => void) {
-  //   if (this._session) {
-  //     var subscriberProperties = {
-  //       insertMode: 'append',
-  //       width: '100%',
-  //       height: '100%'
-  //     };
-  //
-  //     var eventHandler = (event) => {
-  //       console.log("Subscribe to stream created, session:")
-  //       console.log(this._session)
-  //       this._subscriber = this._session.subscribeToStream(event.stream, this._subscriberTag, subscriberProperties);
-  //       this._isVideoActive = event.stream.hasVideo;
-  //       if (onComplete) onComplete(event);
-  //     };
-  //
-  //     return this._session.on(SESSION_EVENTS.streamCreated).do((event)=>{
-  //       console.log("Subscribe to stream created, session:")
-  //       console.log(this._session)
-  //       this._subscriber = this._session.subscribeToStream(event.stream, this._subscriberTag, subscriberProperties);
-  //       this._isVideoActive = event.stream.hasVideo;
-  //     });
-  //   }
-  // }
-  //
+  private _onCreatedStreams() {
+      var subscriberProperties = {
+        insertMode: 'append',
+        width: '100%',
+        height: '100%'
+      };
+
+      return this._session.on(SESSION_EVENTS.streamCreated).do((event) => {
+        this._subscriber = this._session.subscribeToStream(event.stream, this._subscriberTag, subscriberProperties);
+        this._isVideoActive = event.stream.hasVideo;
+      });
+  }
+
   // private _subscribeToDestroyedStreams() {
   //     return this._session.on(SESSION_EVENTS.streamDestroyed);
   // }
   //
   // //https://tokbox.com/developer/sdks/js/reference/ConnectionEvent.html
-  // private _subscribeToConnectionDestroyed() {
-  //   if (this._session) {
-  //     return this._session.on(SESSION_EVENTS.connectionDestroyed);
-  //   }
-  // }
-  //
-  // private _subscribeToSessionDisconnectedNetworkFailed(onComplete ?: () => void) {
-  //   var eventHandler = (event) => {
-  //     if (event.reason === SESSION_DISCONNECT_REASONS.networkDisconnected) {
-  //       if (onComplete) onComplete();
-  //     }
-  //   };
-  //   this._session.on(SESSION_EVENTS.sessionDisconnected).filter((event)=>{
-  //
-  //   });
-  // }
-  //
+  private _onConnectionDestroyed() {
+      return this._session.on(SESSION_EVENTS.connectionDestroyed);
+  }
+
+  private _onSessionDisconnectedNetworkFailed() {
+    return this._session.on(SESSION_EVENTS.sessionDisconnected).filter((event)=>{
+        return event.reason === SESSION_DISCONNECT_REASONS.networkDisconnected;
+    });
+  }
+
   // private _subscribeToVideoStreamChanges(onComplete ?: (isActive: boolean) => void) {
   //   var eventHandler = (event) => {
   //     if (event.changedProperty === STREAM_PROPERTY_CHANGED.hasVideo) {
@@ -202,18 +176,17 @@ export class OpentokService {
   //   };
   //   this._session.on(SESSION_EVENTS.streamPropertyChanged).;
   // }
-  //
+
+
+
   onOpenMediaAccessDialog() {
     return this._publisher.on(PUBLISHER_EVENTS.accessDialogOpened);
   }
 
   onMediaAccessDenied() {
-    return this._publisher.on(PUBLISHER_EVENTS.accessDenied).do(()=>{
+    return this._publisher.on(PUBLISHER_EVENTS.accessDenied).do(() => {
       this._disconnect();
     });
   }
 
-  onStreamAvailable(){
-    return this._publisher.on(PUBLISHER_EVENTS.accessAllowed);
-  }
 }

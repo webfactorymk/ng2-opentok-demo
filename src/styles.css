@@ -1,1 +1,24 @@
 /* You can add global styles to this file, and also import other style files */
+
+.video-section{
+  margin: 10px;
+  width:765px;
+  height:450px;
+  position: relative;
+}
+.subscriber{
+  width:500px;
+  height:450px;
+  display: inline-block;
+  background: pink;
+}
+.publisher{
+  width:250px;
+  height:200px;
+  display: inline-block;
+  background: green;
+  position:absolute;
+  right:0;
+  bottom:0
+}
+
