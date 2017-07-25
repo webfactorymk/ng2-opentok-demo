@@ -6,12 +6,14 @@ import { AppComponent } from './app.component';
 import {VideoRecepientComponent} from "../video-recepient/video-recepient.component";
 import {VideoCallerComponent} from "../video-caller/video-caller.component";
 import {routing} from "./app.routing";
+import {LoadingComponent} from "../shared/loading/loading.component";
 
 @NgModule({
   declarations: [
     AppComponent,
     VideoCallerComponent,
-    VideoRecepientComponent
+    VideoRecepientComponent,
+    LoadingComponent
   ],
   imports: [
     BrowserModule,

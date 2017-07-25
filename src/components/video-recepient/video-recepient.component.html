@@ -2,6 +2,7 @@
   <h3> Recepient screen </h3>
   <br>
   <img src="assets/images/phone-ringing.gif" *ngIf="hasIncomingCall">
+
   <button class="btn btn-success" (click)="answerCall()" *ngIf="hasIncomingCall"> Answer the video call</button>
   <button class="btn btn-info" (click)="call()"  *ngIf="!isIncomingCallAnswered && !hasIncomingCall"> Make a video call</button>
   <button class="btn btn-danger" (click)="hungUp()" *ngIf="isIncomingCallAnswered"> End video call</button>

@@ -2,10 +2,13 @@
   <h3> Caller screen </h3>
   <br>
 
-  <button class="btn btn-info" (click)="call()"> Make a video call</button>
+  <button class="btn btn-danger" (click)="hungUp()" *ngIf="hasRecepientAnswered"> End video call</button>
+  <button class="btn btn-info" (click)="call()" *ngIf="!isCallEstablished"> Make a video call</button>
 
-  <div id="videos" class="row video-section">
-    <div id="subscriber" class="subscriber"></div>
+  <div id="videos" class="row video-section" [hidden]="!isCallEstablished">
+    <loading [class]="'subscriber'" *ngIf="!hasRecepientAnswered"></loading>
+    <div id="subscriber" class="subscriber"  [hidden]="!hasRecepientAnswered"></div>
     <div id="publisher" class="publisher" ></div>
   </div>
 </div>
+
