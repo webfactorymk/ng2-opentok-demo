@@ -1,14 +1,5 @@
 <div class="container">
   <h3> Recepient screen </h3>
   <br>
-  <img src="assets/images/phone-ringing.gif" *ngIf="hasIncomingCall">
-
-  <button class="btn btn-success" (click)="answerCall()" *ngIf="hasIncomingCall"> Answer the video call</button>
-  <button class="btn btn-info" (click)="call()"  *ngIf="!isIncomingCallAnswered && !hasIncomingCall"> Make a video call</button>
-  <button class="btn btn-danger" (click)="hungUp()" *ngIf="isIncomingCallAnswered"> End video call</button>
-
-  <div id="videos" class="row video-section"  [hidden]="!isIncomingCallAnswered">
-    <div id="subscriber" class="subscriber"></div>
-    <div id="publisher" class="publisher"></div>
-  </div>
+  <video-call-widget [sessionId]="sessionId" [token]="token" ></video-call-widget>
 </div>

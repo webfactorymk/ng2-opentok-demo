@@ -137,8 +137,8 @@ export class OTSession extends OTModel {
   }
 
   //https://tokbox.com/developer/sdks/js/reference/Session.html#unpublish
-  unpublish(publisher): void {
-    this._session.unpublish(publisher);
+  unpublish(publisher:OTPublisher): void {
+    this._session.unpublish(publisher.opentokPublisher);
   }
 
   //https://tokbox.com/developer/sdks/js/reference/Session.html#unsubscribe

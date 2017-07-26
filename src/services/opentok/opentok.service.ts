@@ -50,6 +50,7 @@ export class OpentokService {
   onNetworkFailedForPublisher() {
     return this._onSessionDisconnectedNetworkFailed();
   }
+
   //
   // takeSubscriberScreenshot() {
   //   return this._isVideoActive ? this._subscriber.getImageData() : null;
@@ -123,7 +124,12 @@ export class OpentokService {
 
 
   private _disconnect() {
+    console.log(" DISCONNECT ")
+    console.log(this._publisher)
+    console.log(this._subscriber)
     if (this._session) {
+      if (this._publisher) this._session.unpublish(this._publisher);
+      if (this._subscriber) this._session.unsubscribe(this._subscriber);
       this._session.off();
       this._session.disconnect();
       this._session = null;
@@ -139,16 +145,18 @@ export class OpentokService {
   }
 
   private _onCreatedStreams() {
-      var subscriberProperties = {
-        insertMode: 'append',
-        width: '100%',
-        height: '100%'
-      };
+    var subscriberProperties = {
+      insertMode: 'append',
+      width: '100%',
+      height: '100%'
+    };
 
-      return this._session.on(SESSION_EVENTS.streamCreated).do((event) => {
+    return this._session.on(SESSION_EVENTS.streamCreated).do((event) => {
+      if (!this._subscriber) {
         this._subscriber = this._session.subscribeToStream(event.stream, this._subscriberTag, subscriberProperties);
         this._isVideoActive = event.stream.hasVideo;
-      });
+      }
+    });
   }
 
   // private _subscribeToDestroyedStreams() {
@@ -156,13 +164,14 @@ export class OpentokService {
   // }
   //
   // //https://tokbox.com/developer/sdks/js/reference/ConnectionEvent.html
+
   private _onConnectionDestroyed() {
-      return this._session.on(SESSION_EVENTS.connectionDestroyed);
+    return this._session.on(SESSION_EVENTS.connectionDestroyed);
   }
 
   private _onSessionDisconnectedNetworkFailed() {
-    return this._session.on(SESSION_EVENTS.sessionDisconnected).filter((event)=>{
-        return event.reason === SESSION_DISCONNECT_REASONS.networkDisconnected;
+    return this._session.on(SESSION_EVENTS.sessionDisconnected).filter((event) => {
+      return event.reason === SESSION_DISCONNECT_REASONS.networkDisconnected;
     });
   }
 
@@ -176,7 +185,6 @@ export class OpentokService {
   //   };
   //   this._session.on(SESSION_EVENTS.streamPropertyChanged).;
   // }
-
 
 
   onOpenMediaAccessDialog() {

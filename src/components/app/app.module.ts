@@ -7,13 +7,15 @@ import {VideoRecepientComponent} from "../video-recepient/video-recepient.compon
 import {VideoCallerComponent} from "../video-caller/video-caller.component";
 import {routing} from "./app.routing";
 import {LoadingComponent} from "../shared/loading/loading.component";
+import {VideoCallWidgetComponent} from "../shared/video-call-widget/video-call-widget.component";
 
 @NgModule({
   declarations: [
     AppComponent,
     VideoCallerComponent,
     VideoRecepientComponent,
-    LoadingComponent
+    LoadingComponent,
+    VideoCallWidgetComponent
   ],
   imports: [
     BrowserModule,
