@@ -1,12 +1,13 @@
 import {Component, Input, OnInit} from "@angular/core";
 import {OpentokService} from "../../../services/opentok/opentok.service";
 import {LoadingComponent} from "../loading/loading.component";
-import {VideoCallStateManagerService, VIDEO_CALL_STATES} from "./video-call-state-manager.service";
+import {VideoCallStates, VideoCallStateManagerService} from "./video-call-state-manager.service";
+import {VideoCallManager} from "../../../services/video-call-manager.service";
 
 @Component({
   selector: 'video-call-widget',
   templateUrl: 'video-call-widget.component.html',
-  providers: [OpentokService],
+  providers: [VideoCallManager, OpentokService, VideoCallStateManagerService],
   viewProviders: [LoadingComponent]
 })
 
@@ -21,118 +22,75 @@ export class VideoCallWidgetComponent implements OnInit {
   @Input() sessionId: string;
   @Input() token: string;
 
-  constructor(private _callService: OpentokService,
-              private videoCallStateManager: VideoCallStateManagerService) {
+  constructor(private videoCallManager: VideoCallManager) {
   }
 
   ngOnInit(): void {
     this._subscribeToVideoCallState();
-    this.videoCallStateManager.changeState(VIDEO_CALL_STATES.noCall);
+    this.listenToIncomingCalls();
   }
+
 
   call() {
-    this.videoCallStateManager.changeState(VIDEO_CALL_STATES.calling);
-  }
-
-  private establishCall() {
     if (!this.isCallEstablished) {
-
-      this.initPublisherRequirements();
-
-      this._callService.onIncomingCall().subscribe(() => {
-        this.videoCallStateManager.changeState(VIDEO_CALL_STATES.callStarted);
-      });
-
-      this._callService.call().subscribe(() => {
-        this.isCallEstablished = true;
-        console.log("Call was started")
-      });
+      this.videoCallManager.call();
     }
   }
 
-  private initIncomingCallRequirements() {
-
-    this._callService.connectToSession(this.sessionId, this.token).subscribe(() => {
-
-      this._callService.onIncomingCall().subscribe(() => {
-        this.videoCallStateManager.changeState(VIDEO_CALL_STATES.incomingCall);
-      });
-
-      this._callService.onEndCall().subscribe(() => {
-        this.videoCallStateManager.changeState(VIDEO_CALL_STATES.callHungUpByOther);
-      });
-
-      this._callService.onNetworkFailedForPublisher().subscribe(() => {
-        console.log("onNetworkFailedForPublisher")
-        this.videoCallStateManager.changeState(VIDEO_CALL_STATES.callHungUpByOther);
-      });
-
-      console.log("recepient has connected")
-
-    });
-  }
-
-  private initPublisherRequirements() {
-    this._callService.initPublisher();
-    this._callService.onOpenMediaAccessDialog().subscribe(() => {
-      alert(" allow Camera")
-    });
-    this._callService.onMediaAccessDenied().subscribe(() => {
-      alert(" Camera Disabled")
-    });
-  }
-
   hungUp() {
-    console.log(" HANG UP")
-    this._callService.hangUp();
+    this.videoCallManager.hungUp();
+    this.hideVideosSection();
+  }
+
+  hideVideosSection() {
     this.isCallAnswered = false;
     this.isCallEstablished = false;
     this.isIncomingCallAnswered = false;
     this.hasIncomingCall = false;
-
-    this.videoCallStateManager.changeState(VIDEO_CALL_STATES.noCall);
   }
 
   answerCall() {
-    this.initPublisherRequirements();
-    this._callService.call().subscribe(() => {
-      this.hasIncomingCall = false;
-      this.isIncomingCallAnswered = true;
-      this.videoCallStateManager.changeState(VIDEO_CALL_STATES.callStarted);
-      console.log("Call was answered")
-    });
+    this.videoCallManager.answerCall();
+  }
+
+  private listenToIncomingCalls() {
+    this.videoCallManager.initIncomingCallRequirements(this.sessionId, this.token);
   }
 
   private _subscribeToVideoCallState() {
-    this.videoCallStateManager.getStateChange().subscribe((newState: number) => {
+    this.videoCallManager.getStateChanges().subscribe((newState: number) => {
       this._handleStates(newState);
     });
   }
 
   private _handleStates(newState: number) {
     switch (newState) {
-      case VIDEO_CALL_STATES.noCall: {
-        this.initIncomingCallRequirements();
+      case VideoCallStates.noCall: {
+        this.listenToIncomingCalls();
         break;
       }
 
-      case VIDEO_CALL_STATES.incomingCall: {
+      case VideoCallStates.incomingCall: {
         this.hasIncomingCall = true;
         break;
       }
 
-      case VIDEO_CALL_STATES.calling: {
-        this.establishCall();
+      case VideoCallStates.calling: {
+        this.isCallEstablished = true;
+        this.hasIncomingCall = false;
+        this.isIncomingCallAnswered = false;
         break;
       }
 
-      case VIDEO_CALL_STATES.callStarted: {
+      case VideoCallStates.callStarted: {
         this.isCallAnswered = true;
+        this.hasIncomingCall = false;
+        this.isIncomingCallAnswered = true;
         break;
       }
 
-      case VIDEO_CALL_STATES.callHungUpByOther: {
-        this.hungUp();
+      case VideoCallStates.callHungUpByOther: {
+        this.hideVideosSection();
         break;
       }
     }

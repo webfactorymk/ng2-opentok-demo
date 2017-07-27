@@ -2,10 +2,11 @@ import {Component, OnInit} from "@angular/core";
 import {OpentokService} from "../../services/opentok/opentok.service";
 import {VideoCallWidgetComponent} from "../shared/video-call-widget/video-call-widget.component";
 import {VideoCallStateManagerService} from "../shared/video-call-widget/video-call-state-manager.service";
+import {VideoCallManager} from "../../services/video-call-manager.service";
 
 @Component({
   selector: 'video-caller',
-  providers: [OpentokService, VideoCallStateManagerService],
+  providers: [VideoCallManager, OpentokService, VideoCallStateManagerService],
   templateUrl: 'video-caller.component.html',
   styleUrls: ['video-caller.component.css'],
   viewProviders: [VideoCallWidgetComponent]

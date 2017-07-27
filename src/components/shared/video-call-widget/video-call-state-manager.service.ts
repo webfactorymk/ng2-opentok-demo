@@ -1,6 +1,7 @@
 import {Observable, Subject} from "rxjs";
+import {Injectable} from "@angular/core";
 
-export const enum VIDEO_CALL_STATES {
+export const enum VideoCallStates {
   noCall,
   incomingCall,
   calling,
@@ -8,6 +9,7 @@ export const enum VIDEO_CALL_STATES {
   callHungUpByOther
 }
 
+@Injectable()
 export class VideoCallStateManagerService {
 
   private _state: Subject<number> = new Subject<number>();

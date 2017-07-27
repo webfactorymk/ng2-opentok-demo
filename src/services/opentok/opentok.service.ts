@@ -39,7 +39,6 @@ export class OpentokService {
   // }
 
   onIncomingCall() {
-    console.log("Subscribe to stream created")
     return this._onCreatedStreams();
   }
 
@@ -124,9 +123,6 @@ export class OpentokService {
 
 
   private _disconnect() {
-    console.log(" DISCONNECT ")
-    console.log(this._publisher)
-    console.log(this._subscriber)
     if (this._session) {
       if (this._publisher) this._session.unpublish(this._publisher);
       if (this._subscriber) this._session.unsubscribe(this._subscriber);
