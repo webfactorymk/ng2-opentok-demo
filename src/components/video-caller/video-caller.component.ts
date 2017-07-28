@@ -23,48 +23,9 @@ export class VideoCallerComponent implements OnInit {
 
 
   constructor(private _callService: OpentokService) {
-
   }
 
   ngOnInit(): void {
-
-
   }
 
-  // call() {
-  //   this._callService.connectToSession(this.sessionId, this.token).subscribe(() => {
-  //     console.log("caller has connected")
-  //
-  //     if (!this.isCallEstablished) {
-  //
-  //       this._callService.initPublisher();
-  //
-  //       this._callService.onOpenMediaAccessDialog().subscribe(() => {
-  //         alert(" allow Camera")
-  //         console.log(" allow Camera")
-  //       });
-  //
-  //       this._callService.onMediaAccessDenied().subscribe(() => {
-  //         alert(" Camera Disabled")
-  //         console.log(" Camera Disabled")
-  //       });
-  //
-  //       this._callService.onIncomingCall().subscribe(() => {
-  //         this.hasRecepientAnswered = true;
-  //         console.log("Receive the recepient's video")
-  //       });
-  //
-  //       this._callService.call().subscribe(() => {
-  //         console.log("Call was started")
-  //         this.isCallEstablished = true;
-  //       });
-  //     }
-  //   });
-  // }
-  //
-  // hungUp() {
-  //   this._callService.hangUp();
-  //   this.hasRecepientAnswered = false;
-  //   this.isCallEstablished = false;
-  // }
 }
