@@ -6,6 +6,11 @@ import {
 import {Observable} from "rxjs";
 import {Injectable} from "@angular/core";
 
+export const Signals = {
+  returnScreenshot: "return_screenshot",
+  getScreenshot: "get_screenshot"
+}
+
 @Injectable()
 export class VideoCallManager {
 
@@ -21,9 +26,9 @@ export class VideoCallManager {
     return this.videoCallStateManager.getStateChange();
   }
 
-  initIncomingCallRequirements(sessionId, token):void {
+  initIncomingCallRequirements(sessionId, token) {
 
-    this._callService.connectToSession(sessionId, token).subscribe(() => {
+    return this._callService.connectToSession(sessionId, token).do(() => {
       console.log("connectToSession");
 
       this._callService.onIncomingCall().subscribe(() => {
@@ -43,9 +48,26 @@ export class VideoCallManager {
         this.hungUp();
         this.videoCallStateManager.changeState(VideoCallStates.callHungUpByOther);
       });
-
     });
   }
+
+  listenForScreenshotFromOther() {
+    return this._callService.onSignal(Signals.returnScreenshot);
+  }
+
+  sendScreenshot(img:string){
+    this._callService.sendSignal(Signals.returnScreenshot, img);
+  }
+
+  listenForRequestForScreenshot() {
+    return this._callService.onSignal(Signals.getScreenshot);
+  }
+
+  requestScreenshotFromOther(){
+    return this._callService.sendSignal(Signals.getScreenshot);
+  }
+
+
 
   answerCall():void {
     this._callService.call().subscribe(() => {

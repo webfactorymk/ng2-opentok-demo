@@ -1,25 +1,42 @@
 <img src="assets/images/phone-ringing.gif" *ngIf="hasIncomingCall && !isCallEstablished">
+<div class="call_buttons btn-group">
+  <button class="btn btn-success" (click)="answerCall()" *ngIf="hasIncomingCall && !isCallEstablished"> Answer the video
+    call
+  </button>
 
-<button class="btn btn-success" (click)="answerCall()" *ngIf="hasIncomingCall && !isCallEstablished"> Answer the video
-  call
-</button>
+  <button class="btn btn-info" (click)="call()"
+          *ngIf="!isIncomingCallAnswered && !hasIncomingCall && !isCallEstablished">
+    Make a video call
+  </button>
 
-<button class="btn btn-info" (click)="call()" *ngIf="!isIncomingCallAnswered && !hasIncomingCall && !isCallEstablished">
-  Make a video call
-</button>
+  <button class="btn btn-danger" (click)="hungUp()" *ngIf="isIncomingCallAnswered || isCallEstablished"> End video
+    call
+  </button>
+</div>
+<div class="screenshot_buttons btn-group">
+  <button class="btn btn-primary btn-sm" (click)="takeScreenshot()" *ngIf="isIncomingCallAnswered && isVideoOn"> Take
+    screenshot from buddy
+  </button>
 
-<button class="btn btn-danger" (click)="hungUp()" *ngIf="isIncomingCallAnswered || isCallEstablished"> End video
-  call
-</button>
+  <button class="btn btn-info btn-sm" (click)="askScreenshotFromBuddy()" *ngIf="isIncomingCallAnswered && isVideoOn"> Ask
+    screenshot from buddy
+  </button>
 
-<button class="btn btn-primary" (click)="takeScreenshot()" *ngIf="isIncomingCallAnswered"> Take screenshot
-</button>
+  <button class="btn btn-default btn-sm" (click)="sendScreenshotToBuddy()" *ngIf="isIncomingCallAnswered && isVideoOn">
+    Send screenshot to buddy
+  </button>
+</div>
 
-<button class="btn btn-warning btn-sm" (click)="removeVideo()" *ngIf="isIncomingCallAnswered && isVideoOn"> Remove video stream
-</button>
+<div class="video_toggle_buttons btn-group">
+  <button class="btn btn-warning btn-sm" (click)="removeVideo()" *ngIf="isIncomingCallAnswered && isVideoOn"> Remove
+    video
+    stream
+  </button>
 
-<button class="btn btn-info btn-sm" (click)="showVideo()" *ngIf="isIncomingCallAnswered && !isVideoOn"> Show video stream
-</button>
+  <button class="btn btn-info btn-sm" (click)="showVideo()" *ngIf="isIncomingCallAnswered && !isVideoOn"> Show video
+    stream
+  </button>
+</div>
 
 <div id="videos" class="row video-section" [hidden]="!isCallEstablished  && !isIncomingCallAnswered">
   <loading [class]="'subscriber'" *ngIf="!isCallAnswered && !isIncomingCallAnswered"></loading>
@@ -27,8 +44,13 @@
   <div id="subscriber" class="subscriber" [hidden]="!isCallAnswered && !isIncomingCallAnswered"></div>
   <div id="publisher" class="publisher"></div>
 
-  <div class="subscriber_screenshot_section" *ngIf="isIncomingCallAnswered && othersScreenshot">
+  <div class="subscriber_screenshot_section" *ngIf="isIncomingCallAnswered && screenshotOfTheOtherUser">
     <b>Scheenshot of the other person</b>
-    <img class="subscriber_screenshot" [src]="othersScreenshot" >
+    <img class="subscriber_screenshot" [src]="screenshotOfTheOtherUser">
+  </div>
+
+  <div class="subscriber_screenshot_section buddy_screenshot" *ngIf="isIncomingCallAnswered && screenshotSentFromOtherUser">
+    <b>Scheenshot sent from other person</b>
+    <img class="subscriber_screenshot" [src]="screenshotSentFromOtherUser">
   </div>
 </div>

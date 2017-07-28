@@ -1,5 +1,10 @@
 /* You can add global styles to this file, and also import other style files */
 
+.row{
+  display: block;
+  clear: both;
+}
+
 .video-section{
   margin: 10px;
   width:1050px;
@@ -43,6 +48,10 @@
   text-align: center
 }
 
+.buddy_screenshot{
+  border: 2px solid cornflowerblue;
+}
+
 .subscriber_screenshot{
   width:250px;
   height:200px;
@@ -51,5 +60,27 @@
   right:0;
   bottom:0;
   box-shadow: 4px 4px 4px #53575e;
+}
+
+.btn-group{
+  display: block !important;
+  clear: both !important;
+  margin: 5px !important;
+}
+.btn-group button {
+  padding: 10px 24px; /* Some padding */
+  cursor: pointer; /* Pointer/hand icon */
+  float: left; /* Float the buttons side by side */
+  margin-bottom: 10px;
+}
+
+/* Clear floats (clearfix hack) */
+.btn-group:after {
+  content: "";
+  clear: both;
+}
+
+.btn-group button:not(:last-child) {
+  border-right: none; /* Prevent double borders */
 }
 

@@ -18,7 +18,7 @@ export class OTModel {
         });
     }
 
-    protected createObservableEventListener(object: Object, func:  any, param?: any):Observable<any> {
+    public createObservableEventListener(object: Object, func:  any, param?: any):Observable<any> {
       return Observable.create((observer: Observer<any>) => {
         object[func](param, (event) => {
             observer.next(event);

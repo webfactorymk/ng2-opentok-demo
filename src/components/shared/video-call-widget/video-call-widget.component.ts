@@ -13,15 +13,17 @@ import {VideoCallManager} from "../../../services/video-call-manager.service";
 
 export class VideoCallWidgetComponent implements OnInit {
 
+
   isCallEstablished: boolean = false;
   isCallAnswered: boolean = false;
 
   hasIncomingCall: boolean = false;
   isIncomingCallAnswered: boolean = false;
 
-  isVideoOn:boolean;
+  isVideoOn: boolean;
 
-  othersScreenshot: string;
+  screenshotOfTheOtherUser: string;
+  screenshotSentFromOtherUser: string;
 
   @Input() sessionId: string;
   @Input() token: string;
@@ -60,7 +62,7 @@ export class VideoCallWidgetComponent implements OnInit {
   }
 
   takeScreenshot() {
-    this.othersScreenshot = this.videoCallManager.getSubscriberScreenshot();
+    this.screenshotOfTheOtherUser = this.videoCallManager.getSubscriberScreenshot();
   }
 
   removeVideo() {
@@ -68,13 +70,33 @@ export class VideoCallWidgetComponent implements OnInit {
     this.isVideoOn = false;
   }
 
-  showVideo(){
+  showVideo() {
     this.videoCallManager.showVideo(true);
     this.isVideoOn = true;
   }
 
+  askScreenshotFromBuddy() {
+    this.videoCallManager.requestScreenshotFromOther();
+  }
+
+  sendScreenshotToBuddy(){
+    this.videoCallManager.sendScreenshot(this.screenshotOfTheOtherUser);
+  }
+
   private listenToIncomingCalls() {
-    this.videoCallManager.initIncomingCallRequirements(this.sessionId, this.token);
+    this.videoCallManager.initIncomingCallRequirements(this.sessionId, this.token).subscribe(()=>{
+
+      this.videoCallManager.listenForScreenshotFromOther().subscribe((img: string) => {
+        this.screenshotSentFromOtherUser = img;
+        console.log(" NEW IMG ARRIVED")
+      });
+
+      this.videoCallManager.listenForRequestForScreenshot().subscribe(() => {
+        window.alert(" Your buddy asks for a screenshot of him, please send one :)");
+        console.log(" NEW request ARRIVED")
+      });
+
+    });
   }
 
   private _subscribeToVideoCallState() {
