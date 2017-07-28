@@ -1,7 +1,14 @@
 import {Injectable} from "@angular/core";
-import {OTSession, SESSION_EVENTS, SESSION_DISCONNECT_REASONS} from "./ng2-opentok/session.model";
+import {
+  OTSession,
+  SESSION_EVENTS,
+  SESSION_DISCONNECT_REASONS,
+  STREAM_PROPERTY_CHANGED
+} from "./ng2-opentok/session.model";
 import {OTPublisher, PUBLISHER_EVENTS} from "./ng2-opentok/publisher.model";
 import {OTSubscriber} from "./ng2-opentok/subscriber.model";
+import {OTSignal} from "./ng2-opentok/signal.model";
+import {Observable} from "rxjs";
 
 @Injectable()
 export class OpentokService {
@@ -21,53 +28,79 @@ export class OpentokService {
   connectToSession(sessionId: string, token: string, publisherTag?: string, subscriberTag?: string) {
     if (publisherTag) this._publisherTag = publisherTag;
     if (subscriberTag) this._subscriberTag = subscriberTag;
-    return this._connectToSession(sessionId, token);
+    this._session = OTSession.init(this._apiKey, sessionId);
+    return this._session.connect(token);
   }
-
 
   call() {
-    return this._publishStream();
+    this._initPublisher();
+    return this._session.publish(this._publisher);
   }
-
 
   hangUp() {
-    this._disconnect();
+    if (this._session) {
+      if (this._publisher) this._session.unpublish(this._publisher);
+      if (this._subscriber) this._session.unsubscribe(this._subscriber);
+      this._session.off();
+      this._session.disconnect();
+      this._session = null;
+    }
+    if (this._publisher) {
+      this._publisher.off();
+      this._publisher.destroy();
+      this._publisher = null;
+    }
+    if (this._subscriber) {
+      this._subscriber = null;
+    }
   }
 
-  // onVideoChanged(callback?: (isActive: boolean) => void) {
-  //   this._subscribeToVideoStreamChanges(callback);
-  // }
+  publishVideo(show: boolean) {
+    this._publisher.publishVideo(show);
+  }
 
   onIncomingCall() {
     return this._onCreatedStreams();
   }
 
+  //https://tokbox.com/developer/sdks/js/reference/ConnectionEvent.html
   onEndCall() {
-    return this._onConnectionDestroyed();
+    return this._session.on(SESSION_EVENTS.connectionDestroyed);
   }
 
   onNetworkFailedForPublisher() {
-    return this._onSessionDisconnectedNetworkFailed();
+    return this._session.on(SESSION_EVENTS.sessionDisconnected).filter((event) => {
+      return event.reason === SESSION_DISCONNECT_REASONS.networkDisconnected;
+    });
   }
 
-  //
-  // takeSubscriberScreenshot() {
-  //   return this._isVideoActive ? this._subscriber.getImageData() : null;
-  // }
-  //
-  // sendSignal(signal: string, data?: string) {
-  //   if (this._session) {
-  //     let OTsignal: OTSignal = new OTSignal(signal, data);
-  //     return this._session.signal(OTsignal);
-  //   }
-  //   else
-  //     return Observable.of(false);
-  // }
-  //
-  // onSignal(signal: OTSignal) {
-  //   if (this._session)
-  //     return this._session.onSignal(signal);
-  // }
+
+  getSubscriberScreenshot() {
+    return this._isVideoActive ? this._subscriber.getImageData() : null;
+  }
+
+
+  onVideoChanged() {
+    return this._session.on(SESSION_EVENTS.streamPropertyChanged)
+      .filter((event) => {
+        return event.changedProperty === STREAM_PROPERTY_CHANGED.hasVideo
+      }).do((event) => {
+        this._isVideoActive = event.newValue;
+      });
+  }
+
+  //https://tokbox.com/developer/guides/signaling/js/
+  // Signal type should be a string of only the custom type without the 'signal:' key as said in the documentation.
+  sendSignal(signalType: string, data?: string): Observable<boolean> {
+    let OTsignal: OTSignal = new OTSignal(signalType, data);
+    return this._session.signal(OTsignal);
+  }
+
+  onSignal(signalType: string) {
+    let OTsignal: OTSignal = new OTSignal(signalType);
+    return this._session.onSignal(OTsignal);
+  }
+
   //
   // onReconnecting() {
   //   return this._session.on(SESSION_EVENTS.sessionReconnecting);
@@ -101,16 +134,8 @@ export class OpentokService {
   //   this._subscriber.on(SUBSCRIBER_EVENTS.destroyed);
   // }
   //
-  private _connectToSession(sessionId: string, token: string) {
-    this._session = OTSession.init(this._apiKey, sessionId);
-    return this._session.connect(token);
-  }
 
-  private _publishStream() {
-    return this._session.publish(this._publisher);
-  }
-
-  initPublisher() {
+  private _initPublisher() {
     let publisherProperties = {
       insertMode: 'append',
       width: '100%',
@@ -119,25 +144,6 @@ export class OpentokService {
     };
 
     this._publisher = OTPublisher.init(this._publisherTag, publisherProperties);
-  }
-
-
-  private _disconnect() {
-    if (this._session) {
-      if (this._publisher) this._session.unpublish(this._publisher);
-      if (this._subscriber) this._session.unsubscribe(this._subscriber);
-      this._session.off();
-      this._session.disconnect();
-      this._session = null;
-    }
-    if (this._publisher) {
-      this._publisher.off();
-      this._publisher.destroy();
-      this._publisher = null;
-    }
-    if (this._subscriber) {
-      this._subscriber = null;
-    }
   }
 
   private _onCreatedStreams() {
@@ -159,29 +165,7 @@ export class OpentokService {
   //     return this._session.on(SESSION_EVENTS.streamDestroyed);
   // }
   //
-  // //https://tokbox.com/developer/sdks/js/reference/ConnectionEvent.html
-
-  private _onConnectionDestroyed() {
-    return this._session.on(SESSION_EVENTS.connectionDestroyed);
-  }
-
-  private _onSessionDisconnectedNetworkFailed() {
-    return this._session.on(SESSION_EVENTS.sessionDisconnected).filter((event) => {
-      return event.reason === SESSION_DISCONNECT_REASONS.networkDisconnected;
-    });
-  }
-
-  // private _subscribeToVideoStreamChanges(onComplete ?: (isActive: boolean) => void) {
-  //   var eventHandler = (event) => {
-  //     if (event.changedProperty === STREAM_PROPERTY_CHANGED.hasVideo) {
-  //       this._isVideoActive = event.newValue;
-  //       if (onComplete) onComplete(event.newValue);
-  //     }
-  //     console.log("Property changed. Property: " + event.changedProperty + " new value: " + event.newValue);
-  //   };
-  //   this._session.on(SESSION_EVENTS.streamPropertyChanged).;
-  // }
-
+  //
 
   onOpenMediaAccessDialog() {
     return this._publisher.on(PUBLISHER_EVENTS.accessDialogOpened);
@@ -189,7 +173,7 @@ export class OpentokService {
 
   onMediaAccessDenied() {
     return this._publisher.on(PUBLISHER_EVENTS.accessDenied).do(() => {
-      this._disconnect();
+      this.hangUp();
     });
   }
 

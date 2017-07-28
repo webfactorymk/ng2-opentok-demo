@@ -9,6 +9,8 @@ import {Injectable} from "@angular/core";
 @Injectable()
 export class VideoCallManager {
 
+  private _isVideoActive: boolean = false;
+
   constructor(private _callService: OpentokService,
               private videoCallStateManager: VideoCallStateManagerService) {
 
@@ -19,7 +21,7 @@ export class VideoCallManager {
     return this.videoCallStateManager.getStateChange();
   }
 
-  initIncomingCallRequirements(sessionId, token) {
+  initIncomingCallRequirements(sessionId, token):void {
 
     this._callService.connectToSession(sessionId, token).subscribe(() => {
       console.log("connectToSession");
@@ -45,37 +47,49 @@ export class VideoCallManager {
     });
   }
 
-  answerCall() {
-    this.initPublisherRequirements();
+  answerCall():void {
     this._callService.call().subscribe(() => {
+      this.initMediaRequirements();
+      this._isVideoActive = true;
       this.videoCallStateManager.changeState(VideoCallStates.callStarted);
       console.log("callStarted")
     });
   }
 
-  hungUp() {
+  hungUp():void {
     this._callService.hangUp();
     this.videoCallStateManager.changeState(VideoCallStates.noCall);
     console.log("noCall")
   }
 
-  call() {
-    this.initPublisherRequirements();
-
+  call():void {
     this._callService.onIncomingCall().subscribe(() => {
+      this._isVideoActive = true;
       this.videoCallStateManager.changeState(VideoCallStates.callStarted);
       console.log("callStarted")
 
     });
 
     this._callService.call().subscribe(() => {
+      this.initMediaRequirements();
       this.videoCallStateManager.changeState(VideoCallStates.calling);
       console.log("calling")
     });
+
+    this._callService.onVideoChanged().subscribe(()=>{
+      console.log("videoChanged")
+    });
   }
 
-  private initPublisherRequirements() {
-    this._callService.initPublisher();
+  getSubscriberScreenshot() {
+    return this._callService.getSubscriberScreenshot();
+  }
+
+  showVideo(show:boolean){
+    this._callService.publishVideo(show);
+  }
+
+  private initMediaRequirements():void {
 
     this._callService.onOpenMediaAccessDialog().subscribe(() => {
       alert(" allow Camera")

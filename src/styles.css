@@ -2,7 +2,7 @@
 
 .video-section{
   margin: 10px;
-  width:765px;
+  width:1050px;
   height:450px;
   position: relative;
 }
@@ -29,7 +29,27 @@
   display: inline-block;
   background: #b6a6fc;
   position:absolute;
-  right:0;
+  right:270px;
   bottom:0
+}
+
+.subscriber_screenshot_section{
+  width:250px;
+  height:220px;
+  display: inline-block;
+  position:absolute;
+  right:0;
+  bottom:0;
+  text-align: center
+}
+
+.subscriber_screenshot{
+  width:250px;
+  height:200px;
+  display: inline-block;
+  position:absolute;
+  right:0;
+  bottom:0;
+  box-shadow: 4px 4px 4px #53575e;
 }
 

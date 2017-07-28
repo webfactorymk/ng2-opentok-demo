@@ -11,6 +11,7 @@ import {VideoCallManager} from "../../services/video-call-manager.service";
   providers: [VideoCallManager, OpentokService, VideoCallStateManagerService],
   viewProviders: [VideoCallWidgetComponent]
 })
+
 export class VideoRecepientComponent  {
 
   sessionId = "1_MX40NTg5NzI0Mn5-MTQ5ODIwODc1NzU0M354STByZDE0M080SEg0MzBCdXl2cFJWc2d-UH4";

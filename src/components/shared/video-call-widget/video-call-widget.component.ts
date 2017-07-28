@@ -19,6 +19,10 @@ export class VideoCallWidgetComponent implements OnInit {
   hasIncomingCall: boolean = false;
   isIncomingCallAnswered: boolean = false;
 
+  isVideoOn:boolean;
+
+  othersScreenshot: string;
+
   @Input() sessionId: string;
   @Input() token: string;
 
@@ -34,6 +38,7 @@ export class VideoCallWidgetComponent implements OnInit {
   call() {
     if (!this.isCallEstablished) {
       this.videoCallManager.call();
+      this.isVideoOn = true;
     }
   }
 
@@ -51,6 +56,21 @@ export class VideoCallWidgetComponent implements OnInit {
 
   answerCall() {
     this.videoCallManager.answerCall();
+    this.isVideoOn = true;
+  }
+
+  takeScreenshot() {
+    this.othersScreenshot = this.videoCallManager.getSubscriberScreenshot();
+  }
+
+  removeVideo() {
+    this.videoCallManager.showVideo(false);
+    this.isVideoOn = false;
+  }
+
+  showVideo(){
+    this.videoCallManager.showVideo(true);
+    this.isVideoOn = true;
   }
 
   private listenToIncomingCalls() {
