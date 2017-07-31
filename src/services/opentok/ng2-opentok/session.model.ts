@@ -42,10 +42,10 @@ export class OTSession extends OTModel {
 
   constructor(session: any) {
     super();
-    if(session) this._session = session;
+    if (session) this._session = session;
   }
 
-  static init( apiKey: string, sessionId: string){
+  static init(apiKey: string, sessionId: string) {
     return new OTSession(OT.initSession(apiKey, sessionId));
   }
 
@@ -118,17 +118,18 @@ export class OTSession extends OTModel {
   //https://tokbox.com/developer/sdks/js/reference/Session.html#signal
   //Used to add signal listeners
   onSignal(signal: OTSignal): Observable<any> {
-    return this.on(signal.event);
+    return this.on(signal.getSignalEvent());
   }
 
   //https://tokbox.com/developer/sdks/js/reference/Session.html#publish
-  publish(publisher:OTPublisher): Observable<boolean> {
+  publish(publisher: OTPublisher): Observable<boolean> {
     return this.createObservableMethod(this._session, 'publish', publisher.opentokPublisher);
   }
 
   //https://tokbox.com/developer/sdks/js/reference/Session.html#signal
   signal(signal: OTSignal): Observable<boolean> {
-    return this.createObservableMethod(this._session, 'signal', signal);
+    console.log(signal.getHash())
+    return this.createObservableMethod(this._session, 'signal', signal.getHash());
   }
 
   //https://tokbox.com/developer/sdks/js/reference/Session.html#subscribe
@@ -137,12 +138,12 @@ export class OTSession extends OTModel {
   }
 
   //https://tokbox.com/developer/sdks/js/reference/Session.html#unpublish
-  unpublish(publisher:OTPublisher): void {
+  unpublish(publisher: OTPublisher): void {
     this._session.unpublish(publisher.opentokPublisher);
   }
 
   //https://tokbox.com/developer/sdks/js/reference/Session.html#unsubscribe
-  unsubscribe(subscriber:OTSubscriber): void {
+  unsubscribe(subscriber: OTSubscriber): void {
     this._session.unsubscribe(subscriber.opentokSubscriber);
   }
 

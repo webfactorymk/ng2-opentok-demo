@@ -60,7 +60,18 @@ export class OpentokService {
   }
 
   onIncomingCall() {
-    return this._onCreatedStreams();
+    var subscriberProperties = {
+      insertMode: 'append',
+      width: '100%',
+      height: '100%'
+    };
+
+    return this._session.on(SESSION_EVENTS.streamCreated).do((event) => {
+      if (!this._subscriber) {
+        this._subscriber = this._session.subscribeToStream(event.stream, this._subscriberTag, subscriberProperties);
+        this._isVideoActive = event.stream.hasVideo;
+      }
+    });
   }
 
   //https://tokbox.com/developer/sdks/js/reference/ConnectionEvent.html
@@ -144,21 +155,6 @@ export class OpentokService {
     };
 
     this._publisher = OTPublisher.init(this._publisherTag, publisherProperties);
-  }
-
-  private _onCreatedStreams() {
-    var subscriberProperties = {
-      insertMode: 'append',
-      width: '100%',
-      height: '100%'
-    };
-
-    return this._session.on(SESSION_EVENTS.streamCreated).do((event) => {
-      if (!this._subscriber) {
-        this._subscriber = this._session.subscribeToStream(event.stream, this._subscriberTag, subscriberProperties);
-        this._isVideoActive = event.stream.hasVideo;
-      }
-    });
   }
 
   // private _subscribeToDestroyedStreams() {

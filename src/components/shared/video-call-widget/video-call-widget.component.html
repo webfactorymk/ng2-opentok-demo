@@ -1,4 +1,12 @@
 <img src="assets/images/phone-ringing.gif" *ngIf="hasIncomingCall && !isCallEstablished">
+
+<div class="pull-right" *ngIf="msgFromBuddy">
+ <i>Message from buddy: </i>  {{msgFromBuddy}}
+ <a (click)="clearMsg()">
+   <img class="remove-btn" src="assets/images/remove-icon-png-22.png">
+ </a>
+</div>
+
 <div class="call_buttons btn-group">
   <button class="btn btn-success" (click)="answerCall()" *ngIf="hasIncomingCall && !isCallEstablished"> Answer the video
     call
@@ -13,17 +21,14 @@
     call
   </button>
 </div>
+
 <div class="screenshot_buttons btn-group">
   <button class="btn btn-primary btn-sm" (click)="takeScreenshot()" *ngIf="isIncomingCallAnswered && isVideoOn"> Take
     screenshot from buddy
   </button>
 
-  <button class="btn btn-info btn-sm" (click)="askScreenshotFromBuddy()" *ngIf="isIncomingCallAnswered && isVideoOn"> Ask
-    screenshot from buddy
-  </button>
-
-  <button class="btn btn-default btn-sm" (click)="sendScreenshotToBuddy()" *ngIf="isIncomingCallAnswered && isVideoOn">
-    Send screenshot to buddy
+  <button class="btn btn-info btn-sm" (click)="sendSignalToBuddy()" *ngIf="isIncomingCallAnswered && isVideoOn">
+    Send message
   </button>
 </div>
 
@@ -49,8 +54,4 @@
     <img class="subscriber_screenshot" [src]="screenshotOfTheOtherUser">
   </div>
 
-  <div class="subscriber_screenshot_section buddy_screenshot" *ngIf="isIncomingCallAnswered && screenshotSentFromOtherUser">
-    <b>Scheenshot sent from other person</b>
-    <img class="subscriber_screenshot" [src]="screenshotSentFromOtherUser">
-  </div>
 </div>

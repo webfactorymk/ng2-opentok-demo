@@ -1,25 +1,27 @@
 /* You can add global styles to this file, and also import other style files */
 
-.row{
+.row {
   display: block;
   clear: both;
 }
 
-.video-section{
+.video-section {
   margin: 10px;
-  width:1050px;
-  height:450px;
+  width: 1050px;
+  height: 450px;
   position: relative;
 }
-.subscriber{
-  width:500px;
-  height:450px;
+
+.subscriber {
+  width: 500px;
+  height: 450px;
   display: inline-block;
   background: #c8cbd1;
   border: 1px solid;
   box-shadow: 5px 5px 5px #888888;
 }
-.subscriber_loading_text{
+
+.subscriber_loading_text {
   color: #888888;
   font-size: large;
   position: absolute;
@@ -28,45 +30,46 @@
   width: 100%;
 }
 
-.publisher{
-  width:250px;
-  height:200px;
+.publisher {
+  width: 250px;
+  height: 200px;
   display: inline-block;
   background: #b6a6fc;
-  position:absolute;
-  right:270px;
-  bottom:0
+  position: absolute;
+  right: 270px;
+  bottom: 0
 }
 
-.subscriber_screenshot_section{
-  width:250px;
-  height:220px;
+.subscriber_screenshot_section {
+  width: 250px;
+  height: 220px;
   display: inline-block;
-  position:absolute;
-  right:0;
-  bottom:0;
+  position: absolute;
+  right: 0;
+  bottom: 0;
   text-align: center
 }
 
-.buddy_screenshot{
+.buddy_screenshot {
   border: 2px solid cornflowerblue;
 }
 
-.subscriber_screenshot{
-  width:250px;
-  height:200px;
+.subscriber_screenshot {
+  width: 250px;
+  height: 200px;
   display: inline-block;
-  position:absolute;
-  right:0;
-  bottom:0;
+  position: absolute;
+  right: 0;
+  bottom: 0;
   box-shadow: 4px 4px 4px #53575e;
 }
 
-.btn-group{
+.btn-group {
   display: block !important;
   clear: both !important;
   margin: 5px !important;
 }
+
 .btn-group button {
   padding: 10px 24px; /* Some padding */
   cursor: pointer; /* Pointer/hand icon */
@@ -82,5 +85,10 @@
 
 .btn-group button:not(:last-child) {
   border-right: none; /* Prevent double borders */
+}
+
+.remove-btn {
+  height: 40px;
+  width: 40px;
 }
 

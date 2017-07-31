@@ -23,7 +23,7 @@ export class VideoCallWidgetComponent implements OnInit {
   isVideoOn: boolean;
 
   screenshotOfTheOtherUser: string;
-  screenshotSentFromOtherUser: string;
+  msgFromBuddy: string;
 
   @Input() sessionId: string;
   @Input() token: string;
@@ -75,27 +75,23 @@ export class VideoCallWidgetComponent implements OnInit {
     this.isVideoOn = true;
   }
 
-  askScreenshotFromBuddy() {
-    this.videoCallManager.requestScreenshotFromOther();
+  sendSignalToBuddy(){
+    this.videoCallManager.sendSignal(" SIGNAL WAS SENT. YEY");
   }
 
-  sendScreenshotToBuddy(){
-    this.videoCallManager.sendScreenshot(this.screenshotOfTheOtherUser);
+  clearMsg(){
+    this.msgFromBuddy = null;
   }
 
   private listenToIncomingCalls() {
     this.videoCallManager.initIncomingCallRequirements(this.sessionId, this.token).subscribe(()=>{
+      this._listenToSignals();
+    });
+  }
 
-      this.videoCallManager.listenForScreenshotFromOther().subscribe((img: string) => {
-        this.screenshotSentFromOtherUser = img;
-        console.log(" NEW IMG ARRIVED")
-      });
-
-      this.videoCallManager.listenForRequestForScreenshot().subscribe(() => {
-        window.alert(" Your buddy asks for a screenshot of him, please send one :)");
-        console.log(" NEW request ARRIVED")
-      });
-
+  private _listenToSignals(){
+    this.videoCallManager.listenForSignal().subscribe((msg: any) => {
+      this.msgFromBuddy = msg.data;
     });
   }
 
@@ -128,6 +124,7 @@ export class VideoCallWidgetComponent implements OnInit {
         this.isCallAnswered = true;
         this.hasIncomingCall = false;
         this.isIncomingCallAnswered = true;
+        this._listenToSignals();
         break;
       }
 

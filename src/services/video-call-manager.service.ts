@@ -7,8 +7,8 @@ import {Observable} from "rxjs";
 import {Injectable} from "@angular/core";
 
 export const Signals = {
-  returnScreenshot: "return_screenshot",
-  getScreenshot: "get_screenshot"
+  showMessage: "showMessage",
+
 }
 
 @Injectable()
@@ -29,44 +29,33 @@ export class VideoCallManager {
   initIncomingCallRequirements(sessionId, token) {
 
     return this._callService.connectToSession(sessionId, token).do(() => {
-      console.log("connectToSession");
 
       this._callService.onIncomingCall().subscribe(() => {
         this.videoCallStateManager.changeState(VideoCallStates.incomingCall);
-        console.log("incomingCall")
       });
 
       this._callService.onEndCall().subscribe(() => {
         this.hungUp();
         this.videoCallStateManager.changeState(VideoCallStates.callHungUpByOther);
-        console.log("callHungUpByOther")
 
       });
 
       this._callService.onNetworkFailedForPublisher().subscribe(() => {
-        console.log("onNetworkFailedForPublisher");
         this.hungUp();
         this.videoCallStateManager.changeState(VideoCallStates.callHungUpByOther);
       });
     });
   }
 
-  listenForScreenshotFromOther() {
-    return this._callService.onSignal(Signals.returnScreenshot);
+  listenForSignal() {
+    return this._callService.onSignal(Signals.showMessage);
   }
 
-  sendScreenshot(img:string){
-    this._callService.sendSignal(Signals.returnScreenshot, img);
+  sendSignal(data:string){
+    this._callService.sendSignal(Signals.showMessage, data).subscribe(()=>{
+      console.log("sent signal")
+    });
   }
-
-  listenForRequestForScreenshot() {
-    return this._callService.onSignal(Signals.getScreenshot);
-  }
-
-  requestScreenshotFromOther(){
-    return this._callService.sendSignal(Signals.getScreenshot);
-  }
-
 
 
   answerCall():void {
@@ -74,32 +63,26 @@ export class VideoCallManager {
       this.initMediaRequirements();
       this._isVideoActive = true;
       this.videoCallStateManager.changeState(VideoCallStates.callStarted);
-      console.log("callStarted")
     });
   }
 
   hungUp():void {
     this._callService.hangUp();
     this.videoCallStateManager.changeState(VideoCallStates.noCall);
-    console.log("noCall")
   }
 
   call():void {
     this._callService.onIncomingCall().subscribe(() => {
       this._isVideoActive = true;
       this.videoCallStateManager.changeState(VideoCallStates.callStarted);
-      console.log("callStarted")
-
     });
 
     this._callService.call().subscribe(() => {
       this.initMediaRequirements();
       this.videoCallStateManager.changeState(VideoCallStates.calling);
-      console.log("calling")
     });
 
     this._callService.onVideoChanged().subscribe(()=>{
-      console.log("videoChanged")
     });
   }
 
