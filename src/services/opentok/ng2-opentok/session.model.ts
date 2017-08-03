@@ -3,10 +3,13 @@ import {OTSubscriber} from "./subscriber.model";
 import {Observable} from "rxjs";
 import {OTModel} from "./shared/ot-model.model";
 import {OTPublisher} from "./publisher.model";
+import {ObservablesUtil} from "./shared/observables-util.service";
+import {OTEvent} from "./event.model";
+import {OTConnection} from "./connection.model";
+import {OTCapabilities} from "./capabilities.model";
+import {OTStream} from "./stream.model";
 
 declare var OT: any;
-declare var scriptLoaded: any;
-
 // Opentok session
 // https://tokbox.com/developer/guides/connect-session/js/#initialize_session
 // https://tokbox.com/developer/sdks/js/reference/Session.html
@@ -39,6 +42,9 @@ export const STREAM_PROPERTY_CHANGED = {
 export class OTSession extends OTModel {
 
   private _session;
+  private _connection: OTConnection;
+  private _capabilitites: OTCapabilities;
+  private _sessionId: string;
 
   constructor(session: any) {
     super();
@@ -49,19 +55,38 @@ export class OTSession extends OTModel {
     return new OTSession(OT.initSession(apiKey, sessionId));
   }
 
-  //https://tokbox.com/developer/sdks/js/reference/Connection.html
-  getConnection() {
-    return this._session ? this._session.connection : null;
+  getConnection(): OTConnection {
+    return this._session ? new OTConnection(this._session.connection) : null;
   }
 
-  //https://tokbox.com/developer/sdks/js/reference/Capabilities.html
-  getCapabilities() {
-    return this._session ? this._session.capabilities : null;
+  getCapabilities(): OTCapabilities {
+    return this._session ? new OTCapabilities(this._session.capabilities) : null;
   }
+
+  getSessionId(): string {
+    return this._session ? this._session : null;
+  }
+
+
+  //https://tokbox.com/developer/sdks/js/reference/Session.html#off
+  off(events?: string, context?: Object): Observable<OTEvent> {
+    return ObservablesUtil.getObservableEvent(this._session, 'off', events, context);
+  }
+
+  //https://tokbox.com/developer/sdks/js/reference/Session.html#on
+  on(events: string, context?: Object): Observable<OTEvent> {
+    return ObservablesUtil.getObservableEvent(this._session, 'on', events, context);
+  }
+
+  //https://tokbox.com/developer/sdks/js/reference/Session.html#once
+  once(events: string, context?: Object): Observable<OTEvent> {
+    return ObservablesUtil.getObservableEvent(this._session, 'once', events, context);
+  }
+
 
   //https://tokbox.com/developer/sdks/js/reference/Session.html#connect
   connect(token: string): Observable<boolean> {
-    return this.createObservableMethod(this._session, 'connect', token);
+    return ObservablesUtil.getObservableMethod(this._session, 'connect', token);
   }
 
   //https://tokbox.com/developer/sdks/js/reference/Session.html#disconnect
@@ -73,23 +98,22 @@ export class OTSession extends OTModel {
   }
 
   //https://tokbox.com/developer/sdks/js/reference/Session.html#forceDisconnect
-  forceDisconnect(connection): Observable<boolean> {
+  forceDisconnect(connection:OTConnection): Observable<void> {
     if (this._session) {
-      return this.createObservableMethod(this._session, 'forceDisconnect', connection)
+      return ObservablesUtil.getObservableMethod(this._session, 'forceDisconnect', connection.getConnectionId())
         .do(() => {
           this._session = null;
         });
     }
-
   }
 
   //https://tokbox.com/developer/sdks/js/reference/Session.html#forceUnpublish
-  forceUnpublish(stream) {
-    return this.createObservableMethod(this._session, 'forceDisconnect', stream);
+  forceUnpublish(stream: OTStream) {
+    return ObservablesUtil.getObservableMethod(this._session, 'forceDisconnect', stream.);
   }
 
   //https://tokbox.com/developer/sdks/js/reference/Session.html#getPublisherForStream
-  getPublisherForStream(stream) {
+  getPublisherForStream(stream: OTStream) {
     return new OTPublisher(this._session.getPublisherForStream(stream));
   }
 
@@ -100,36 +124,21 @@ export class OTSession extends OTModel {
     });
   }
 
-  //https://tokbox.com/developer/sdks/js/reference/Session.html#off
-  off(events?: String): Observable<any> {
-    return this.createObservableEventListener(this._session, 'off', events);
-  }
-
-  //https://tokbox.com/developer/sdks/js/reference/Session.html#on
-  on(events: String): Observable<any> {
-    return this.createObservableEventListener(this._session, 'on', events);
-  }
-
-  //https://tokbox.com/developer/sdks/js/reference/Session.html#once
-  once(events: String): Observable<any> {
-    return this.createObservableEventListener(this._session, 'once', events);
-  }
-
-  //https://tokbox.com/developer/sdks/js/reference/Session.html#signal
-  //Used to add signal listeners
-  onSignal(signal: OTSignal): Observable<any> {
+  // Listen to signal
+  // https://tokbox.com/developer/sdks/js/reference/Session.html#signal
+  onSignal(signal: OTSignal): Observable<OTEvent> {
     return this.on(signal.getSignalEvent());
   }
 
   //https://tokbox.com/developer/sdks/js/reference/Session.html#publish
   publish(publisher: OTPublisher): Observable<boolean> {
-    return this.createObservableMethod(this._session, 'publish', publisher.opentokPublisher);
+    return ObservablesUtil.getObservableMethod(this._session, 'publish', publisher.opentokPublisher);
   }
 
   //https://tokbox.com/developer/sdks/js/reference/Session.html#signal
   signal(signal: OTSignal): Observable<boolean> {
     console.log(signal.getHash())
-    return this.createObservableMethod(this._session, 'signal', signal.getHash());
+    return ObservablesUtil.getObservableMethod(this._session, 'signal', signal.getHash());
   }
 
   //https://tokbox.com/developer/sdks/js/reference/Session.html#subscribe

@@ -90,7 +90,7 @@ export class VideoCallWidgetComponent implements OnInit {
   }
 
   private _listenToSignals(){
-    this.videoCallManager.listenForSignal().subscribe((msg: any) => {
+    this.videoCallManager.onSignal().subscribe((msg: any) => {
       this.msgFromBuddy = msg.data;
     });
   }

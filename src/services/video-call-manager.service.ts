@@ -47,7 +47,7 @@ export class VideoCallManager {
     });
   }
 
-  listenForSignal() {
+  onSignal() {
     return this._callService.onSignal(Signals.showMessage);
   }
 
@@ -56,7 +56,6 @@ export class VideoCallManager {
       console.log("sent signal")
     });
   }
-
 
   answerCall():void {
     this._callService.call().subscribe(() => {

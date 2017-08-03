@@ -112,15 +112,15 @@ export class OpentokService {
     return this._session.onSignal(OTsignal);
   }
 
-  //
-  // onReconnecting() {
-  //   return this._session.on(SESSION_EVENTS.sessionReconnecting);
-  // }
-  //
-  // onReconnected() {
-  //   this._session.on(SESSION_EVENTS.sessionReconnected);
-  // }
-  //
+
+  onReconnecting() {
+    return this._session.on(SESSION_EVENTS.sessionReconnecting);
+  }
+
+  onReconnected() {
+    this._session.on(SESSION_EVENTS.sessionReconnected);
+  }
+
   // onStreamDestroyed(onComplete: () => void) {
   //   this._subscribeToDestroyedStreams(onComplete);
   // }
@@ -144,7 +144,7 @@ export class OpentokService {
   // onSubscriberDestroyed() {
   //   this._subscriber.on(SUBSCRIBER_EVENTS.destroyed);
   // }
-  //
+
 
   private _initPublisher() {
     let publisherProperties = {

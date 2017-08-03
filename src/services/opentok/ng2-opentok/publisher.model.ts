@@ -1,6 +1,8 @@
 import {OTModel} from "./shared/ot-model.model";
 import {Observable} from "rxjs";
 import {OTSession} from "./session.model";
+import {ObservablesUtil} from "./shared/observables-util.service";
+import {OTEvent} from "./event.model";
 declare var OT: any;
 declare var scriptLoaded: any;
 
@@ -35,6 +37,22 @@ export class OTPublisher extends OTModel {
     return new OTPublisher(OT.initPublisher(publisherContainer, properties));
   }
 
+  //https://tokbox.com/developer/sdks/js/reference/Publisher.html#off
+  off(events?: string, context?:Object): Observable<OTEvent> {
+    return ObservablesUtil.getObservableEvent(this.opentokPublisher, 'off', events, context);
+  }
+
+  //https://tokbox.com/developer/sdks/js/reference/Publisher.html#on
+  on(events?: string, context?:Object): Observable<OTEvent> {
+    return ObservablesUtil.getObservableEvent(this.opentokPublisher, 'on', events, context);
+  }
+
+  //https://tokbox.com/developer/sdks/js/reference/Publisher.html#once
+  once(events?: string, context?:Object): Observable<OTEvent> {
+    return ObservablesUtil.getObservableEvent(this.opentokPublisher, 'once', events, context);
+  }
+
+
   getAccessAllowed(): boolean {
     return this.opentokPublisher.accessAllowed;
   }
@@ -63,21 +81,6 @@ export class OTPublisher extends OTModel {
   //Returns the base-64-encoded string of PNG data representing the Publisher video.
   getImgData() {
     return "data:image/png;base64," + this.opentokPublisher.getImgData();
-  }
-
-  //https://tokbox.com/developer/sdks/js/reference/Publisher.html#off
-  off(events?: String): Observable<any> {
-    return this.createObservableEventListener(this.opentokPublisher, 'off', events);
-  }
-
-  //https://tokbox.com/developer/sdks/js/reference/Publisher.html#on
-  on(events: String): Observable<any> {
-    return this.createObservableEventListener(this.opentokPublisher, 'on', events);
-  }
-
-  //https://tokbox.com/developer/sdks/js/reference/Publisher.html#once
-  once(events: String): Observable<any> {
-    return this.createObservableEventListener(this.opentokPublisher, 'once', events);
   }
 
   getStyle(){
