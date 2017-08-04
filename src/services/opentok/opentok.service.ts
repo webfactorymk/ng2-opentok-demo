@@ -23,7 +23,7 @@ export class OpentokService {
   private _isVideoActive: boolean = false;
 
   constructor(private opentokConfig:IOpentokConfig) {
-    this._apiKey =  "45897242"; //opentokConfig.apiKey 
+    this._apiKey =  "45897242"; //opentokConfig.apiKey
   }
 
   connectToSession(sessionId: string, token: string, publisherTag?: string, subscriberTag?: string) {
