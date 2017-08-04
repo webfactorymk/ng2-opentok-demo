@@ -9,6 +9,7 @@ import {OTPublisher, PUBLISHER_EVENTS} from "./ng2-opentok/publisher.model";
 import {OTSubscriber} from "./ng2-opentok/subscriber.model";
 import {OTSignal} from "./ng2-opentok/signal.model";
 import {Observable} from "rxjs";
+import {IOpentokConfig} from "./opentok-config.interface";
 
 @Injectable()
 export class OpentokService {
@@ -21,8 +22,8 @@ export class OpentokService {
   private _subscriberTag: string = "subscriber";
   private _isVideoActive: boolean = false;
 
-  constructor() {
-    this._apiKey = "45897242"
+  constructor(private opentokConfig:IOpentokConfig) {
+    this._apiKey =  "45897242"; //opentokConfig.apiKey 
   }
 
   connectToSession(sessionId: string, token: string, publisherTag?: string, subscriberTag?: string) {
