@@ -1,5 +1,5 @@
 import {Observable, Observer} from "rxjs";
-import {OTEvent} from "../event.model";
+import {OTEvent} from "../events/event.model";
 export class ObservablesUtil {
 
   public static getObservableMethod(object: Object, func: any, param?: any): Observable<any> {

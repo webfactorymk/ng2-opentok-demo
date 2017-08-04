@@ -1,9 +1,10 @@
-import {OTModel} from "./shared/ot-model.model";
 import {Observable} from "rxjs";
 import {OTSession} from "./session.model";
 import {ObservablesUtil} from "./shared/observables-util.service";
-import {OTEvent} from "./event.model";
+import {OTEvent} from "./events/event.model";
 import {OTStream} from "./stream.model";
+import {IOTEventListener} from "./shared/event-listener.interface";
+
 declare var OT: any;
 declare var scriptLoaded: any;
 
@@ -25,11 +26,10 @@ export const PUBLISHER_EVENTS = {
   videoElementCreated: "videoElementCreated"
 }
 
-export class OTPublisher extends OTModel {
+export class OTPublisher implements IOTEventListener {
   opentokPublisher: any;
 
   constructor(opentokPublisher: any) {
-    super();
     this.opentokPublisher = opentokPublisher;
   }
 

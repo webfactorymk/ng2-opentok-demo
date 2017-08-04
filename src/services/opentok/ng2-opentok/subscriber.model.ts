@@ -1,29 +1,28 @@
+import {Observable} from "rxjs";
+import {ObservablesUtil} from "./shared/observables-util.service";
+import {OTEvent} from "./events/event.model";
+import {IOTEventListener} from "./shared/event-listener.interface";
+
 // Opentok Subscriber
 // https://tokbox.com/developer/sdks/js/reference/Subscriber.html
 
-import {Observable} from "rxjs";
-import {OTModel} from "./shared/ot-model.model";
-import {ObservablesUtil} from "./shared/observables-util.service";
-import {OTEvent} from "./event.model";
 export const SUBSCRIBER_EVENTS = {
-    audioLevelUpdated: "audioLevelUpdated",
-    connected: "connected",
-    destroyed: "destroyed",
-    disconnected:'disconnected',
-    videoDimensionsChanged: "videoDimensionsChanged",
-    videoDisabled: "videoDisabled",
-    videoDisableWarning: "videoDisableWarning",
-    videoDisableWarningLifted: "videoDisableWarningLifted",
-    videoElementCreated: "videoElementCreated",
-
+  audioLevelUpdated: "audioLevelUpdated",
+  connected: "connected",
+  destroyed: "destroyed",
+  disconnected:'disconnected',
+  videoDimensionsChanged: "videoDimensionsChanged",
+  videoDisabled: "videoDisabled",
+  videoDisableWarning: "videoDisableWarning",
+  videoDisableWarningLifted: "videoDisableWarningLifted",
+  videoElementCreated: "videoElementCreated",
 }
 
-export class OTSubscriber extends OTModel{
+export class OTSubscriber implements IOTEventListener{
 
     opentokSubscriber: any;
 
     constructor(opentokSubscriber: any) {
-      super();
         this.opentokSubscriber = opentokSubscriber;
     }
 

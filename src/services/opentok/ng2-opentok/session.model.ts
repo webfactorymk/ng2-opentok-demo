@@ -1,13 +1,13 @@
 import {OTSignal} from "./signal.model";
 import {OTSubscriber} from "./subscriber.model";
 import {Observable} from "rxjs";
-import {OTModel} from "./shared/ot-model.model";
 import {OTPublisher} from "./publisher.model";
 import {ObservablesUtil} from "./shared/observables-util.service";
-import {OTEvent} from "./event.model";
+import {OTEvent} from "./events/event.model";
 import {OTConnection} from "./connection.model";
 import {OTCapabilities} from "./capabilities.model";
 import {OTStream} from "./stream.model";
+import {IOTEventListener} from "./shared/event-listener.interface";
 
 declare var OT: any;
 // Opentok session
@@ -39,7 +39,7 @@ export const STREAM_PROPERTY_CHANGED = {
   videoDimensions: "videoDimensions"
 }
 
-export class OTSession extends OTModel {
+export class OTSession implements IOTEventListener {
 
   private _session;
   private _connection: OTConnection;
@@ -47,7 +47,6 @@ export class OTSession extends OTModel {
   private _sessionId: string;
 
   constructor(session: any) {
-    super();
     if (session) this._session = session;
   }
 
