@@ -1,31 +1,19 @@
 // Opentok Event
 // https://tokbox.com/developer/sdks/js/reference/Event.html
 
-export class OTEvent {
-  private _event;
+import {OTEventBase} from "./shared/event-base.model";
+export class OTEvent extends OTEventBase {
+
+  readonly cancelable: boolean;
+  readonly target: Object;
+  readonly type: string;
 
   constructor(event: any) {
-    this._event = event;
-  }
+    super(event);
 
-  getCancelable(): boolean {
-    return this._event.cancelable;
-  }
-
-  getTarget(): Object {
-    return this._event.target;
-  }
-
-  getType(): string {
-    return this._event.type;
-  }
-
-  isDefaultPrevented(): boolean {
-    return this._event.isDefaultPrevented();
-  }
-
-  preventDefault(): void {
-    this._event.preventDefault();
+    this.cancelable = this.event.cancelable;
+    this.target = this.event.target;
+    this.type = this.event.type;
   }
 
 }
