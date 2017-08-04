@@ -51,7 +51,7 @@ export class OTSession extends OTModel {
     if (session) this._session = session;
   }
 
-  static init(apiKey: string, sessionId: string) {
+  static init(apiKey: string, sessionId: string): OTSession {
     return new OTSession(OT.initSession(apiKey, sessionId));
   }
 
@@ -98,7 +98,7 @@ export class OTSession extends OTModel {
   }
 
   //https://tokbox.com/developer/sdks/js/reference/Session.html#forceDisconnect
-  forceDisconnect(connection:OTConnection): Observable<void> {
+  forceDisconnect(connection: OTConnection): Observable<void> {
     if (this._session) {
       return ObservablesUtil.getObservableMethod(this._session, 'forceDisconnect', connection.getConnectionId())
         .do(() => {
@@ -108,18 +108,18 @@ export class OTSession extends OTModel {
   }
 
   //https://tokbox.com/developer/sdks/js/reference/Session.html#forceUnpublish
-  forceUnpublish(stream: OTStream) {
-    return ObservablesUtil.getObservableMethod(this._session, 'forceDisconnect', stream.);
+  forceUnpublish(stream: OTStream): Observable<void> {
+    return ObservablesUtil.getObservableMethod(this._session, 'forceDisconnect', stream.getStream());
   }
 
   //https://tokbox.com/developer/sdks/js/reference/Session.html#getPublisherForStream
-  getPublisherForStream(stream: OTStream) {
-    return new OTPublisher(this._session.getPublisherForStream(stream));
+  getPublisherForStream(stream: OTStream): OTPublisher {
+    return new OTPublisher(this._session.getPublisherForStream(stream.getStream()));
   }
 
   //https://tokbox.com/developer/sdks/js/reference/Session.html#getSubscribersForStream
-  getSubscribersForStream(stream): Array<OTSubscriber> {
-    return this._session.getSubscribersForStream(stream).map((subscriber) => {
+  getSubscribersForStream(stream: OTStream): Array<OTSubscriber> {
+    return this._session.getSubscribersForStream(stream.getStream()).map((subscriber) => {
       return new OTSubscriber(subscriber);
     });
   }
@@ -137,12 +137,11 @@ export class OTSession extends OTModel {
 
   //https://tokbox.com/developer/sdks/js/reference/Session.html#signal
   signal(signal: OTSignal): Observable<boolean> {
-    console.log(signal.getHash())
-    return ObservablesUtil.getObservableMethod(this._session, 'signal', signal.getHash());
+    return ObservablesUtil.getObservableMethod(this._session, 'signal', signal.getSignal());
   }
 
   //https://tokbox.com/developer/sdks/js/reference/Session.html#subscribe
-  subscribeToStream(stream, subscriberContainer: string, subscriberProperties = {}): OTSubscriber {
+  subscribeToStream(stream: OTStream, subscriberContainer: string, subscriberProperties = {}): OTSubscriber {
     return new OTSubscriber(this._session.subscribe(stream, subscriberContainer, subscriberProperties));
   }
 

@@ -3,6 +3,7 @@ import {Observable} from "rxjs";
 import {OTSession} from "./session.model";
 import {ObservablesUtil} from "./shared/observables-util.service";
 import {OTEvent} from "./event.model";
+import {OTStream} from "./stream.model";
 declare var OT: any;
 declare var scriptLoaded: any;
 
@@ -38,17 +39,17 @@ export class OTPublisher extends OTModel {
   }
 
   //https://tokbox.com/developer/sdks/js/reference/Publisher.html#off
-  off(events?: string, context?:Object): Observable<OTEvent> {
+  off(events?: string, context?: Object): Observable<OTEvent> {
     return ObservablesUtil.getObservableEvent(this.opentokPublisher, 'off', events, context);
   }
 
   //https://tokbox.com/developer/sdks/js/reference/Publisher.html#on
-  on(events?: string, context?:Object): Observable<OTEvent> {
+  on(events?: string, context?: Object): Observable<OTEvent> {
     return ObservablesUtil.getObservableEvent(this.opentokPublisher, 'on', events, context);
   }
 
   //https://tokbox.com/developer/sdks/js/reference/Publisher.html#once
-  once(events?: string, context?:Object): Observable<OTEvent> {
+  once(events?: string, context?: Object): Observable<OTEvent> {
     return ObservablesUtil.getObservableEvent(this.opentokPublisher, 'once', events, context);
   }
 
@@ -57,34 +58,34 @@ export class OTPublisher extends OTModel {
     return this.opentokPublisher.accessAllowed;
   }
 
-  getElement() {
+  getElement(): HTMLElement {
     return this.opentokPublisher.element;
   }
 
-  getId() {
+  getId(): string {
     return this.opentokPublisher.id;
   }
 
-  getStream() {
-    return this.opentokPublisher.stream;
+  getStream(): OTStream {
+    return new OTStream(this.opentokPublisher.stream);
   }
 
   getSession(): OTSession {
     return new OTSession(this.opentokPublisher.session);
   }
 
-  destroy() {
+  destroy(): void {
     this.opentokPublisher.destroy();
     this.opentokPublisher = null;
   }
 
   //Returns the base-64-encoded string of PNG data representing the Publisher video.
-  getImgData() {
+  getImgData(): string {
     return "data:image/png;base64," + this.opentokPublisher.getImgData();
   }
 
-  getStyle(){
-    return  this.opentokPublisher.getStyle();
+  getStyle(): Object {
+    return this.opentokPublisher.getStyle();
   }
 
   publishAudio(value: boolean): void {
@@ -103,7 +104,7 @@ export class OTPublisher extends OTModel {
     return this.opentokPublisher.videoWidth();
   }
 
-  setStyle(obj: {[style:string]: string}):void{
+  setStyle(obj: {[style: string]: string}): void {
     this.opentokPublisher.setStyle(obj);
   }
 

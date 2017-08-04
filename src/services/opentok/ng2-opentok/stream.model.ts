@@ -9,6 +9,10 @@ export class OTStream {
     this._stream = stream;
   }
 
+  getStream(): any {
+    return this._stream;
+  }
+
   getConnection(): OTConnection {
     return this._stream ? new OTConnection(this._stream.connection) : null;
   }

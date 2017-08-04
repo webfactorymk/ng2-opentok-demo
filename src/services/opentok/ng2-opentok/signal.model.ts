@@ -13,12 +13,12 @@ export class OTSignal {
     if (data) this.data = data;
   }
 
-  getSignalEvent() {
+  getSignalEvent(): string {
     return this.type ? ('signal:' + this.type) : 'signal';
   }
 
-  getHash() {
-    let signalAsHash = {
+  getSignal(): Object {
+    let signalAsHash: Object = {
       data: this.data,
       type: this.type,
       to: this.to

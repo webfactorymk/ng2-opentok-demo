@@ -1,4 +1,3 @@
-
 // Opentok Event
 // https://tokbox.com/developer/sdks/js/reference/Event.html
 
@@ -21,11 +20,11 @@ export class OTEvent {
     return this._event.type;
   }
 
-  isDefaultPrevented():boolean{
+  isDefaultPrevented(): boolean {
     return this._event.isDefaultPrevented();
   }
 
-  preventDefault():void{
+  preventDefault(): void {
     this._event.preventDefault();
   }
 
