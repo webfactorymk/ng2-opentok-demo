@@ -1,5 +1,4 @@
 import {Component, Input, OnInit} from "@angular/core";
-import {OpentokService} from "../../../services/opentok/opentok.service";
 import {LoadingComponent} from "../loading/loading.component";
 import {VideoCallStates, VideoCallStateManagerService} from "./video-call-state-manager.service";
 import {VideoCallManager} from "../../../services/video-call-manager.service";
@@ -7,7 +6,7 @@ import {VideoCallManager} from "../../../services/video-call-manager.service";
 @Component({
   selector: 'video-call-widget',
   templateUrl: 'video-call-widget.component.html',
-  providers: [VideoCallManager, OpentokService, VideoCallStateManagerService],
+  providers: [VideoCallManager, VideoCallStateManagerService],
   viewProviders: [LoadingComponent]
 })
 

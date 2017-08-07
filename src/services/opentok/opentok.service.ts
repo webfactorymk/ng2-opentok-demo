@@ -1,15 +1,19 @@
 import {Injectable} from "@angular/core";
-import {
-  OTSession,
-  SESSION_EVENTS,
-  SESSION_DISCONNECT_REASONS,
-  STREAM_PROPERTY_CHANGED
-} from "./ng2-opentok/session.model";
-import {OTPublisher, PUBLISHER_EVENTS} from "./ng2-opentok/publisher.model";
-import {OTSubscriber} from "./ng2-opentok/subscriber.model";
-import {OTSignal} from "./ng2-opentok/signal.model";
+import {OTSession, SESSION_EVENTS, SESSION_DISCONNECT_REASONS, STREAM_PROPERTY_CHANGED} from "./models/session.model";
+import {OTPublisher, PUBLISHER_EVENTS} from "./models/publisher.model";
+import {OTSubscriber} from "./models/subscriber.model";
+import {OTSignal} from "./models/signal.model";
 import {Observable} from "rxjs";
-import {IOpentokConfig} from "./opentok-config.interface";
+import {OpentokConfig} from "./opentok.config";
+import {OTStreamEvent} from "./models/events/stream-event.model";
+import {SessionDisconnectEvent} from "./models/events/session-disconnect-event.model";
+import {OTStreamPropertyChangedEvent} from "./models/events/stream-property-changed-event.model";
+import {isNullOrUndefined} from "util";
+
+declare var OT: any;
+declare var scriptLoaded: any;
+
+const HAS_SYSTEM_REQUIREMENTS = 1;
 
 @Injectable()
 export class OpentokService {
@@ -22,9 +26,13 @@ export class OpentokService {
   private _subscriberTag: string = "subscriber";
   private _isVideoActive: boolean = false;
 
-  constructor(private opentokConfig:IOpentokConfig) {
-    this._apiKey =  "45897242"; //opentokConfig.apiKey
+  constructor(private opentokConfig: OpentokConfig) {
+    this._apiKey = opentokConfig.apiKey;
   }
+
+  static isWebRTCSupported() {
+    return OT.checkSystemRequirements() == HAS_SYSTEM_REQUIREMENTS;
+  };
 
   connectToSession(sessionId: string, token: string, publisherTag?: string, subscriberTag?: string) {
     if (publisherTag) this._publisherTag = publisherTag;
@@ -67,10 +75,12 @@ export class OpentokService {
       height: '100%'
     };
 
-    return this._session.on(SESSION_EVENTS.streamCreated).do((event) => {
+    return this._session.on(SESSION_EVENTS.streamCreated).do((event: OTStreamEvent) => {
       if (!this._subscriber) {
         this._subscriber = this._session.subscribeToStream(event.stream, this._subscriberTag, subscriberProperties);
-        this._isVideoActive = event.stream.hasVideo;
+        console.log("event.stream")
+        console.log(event.stream)
+        // this._isVideoActive = event.stream.hasAudio();
       }
     });
   }
@@ -81,7 +91,7 @@ export class OpentokService {
   }
 
   onNetworkFailedForPublisher() {
-    return this._session.on(SESSION_EVENTS.sessionDisconnected).filter((event) => {
+    return this._session.on(SESSION_EVENTS.sessionDisconnected).filter((event: SessionDisconnectEvent) => {
       return event.reason === SESSION_DISCONNECT_REASONS.networkDisconnected;
     });
   }
@@ -94,10 +104,10 @@ export class OpentokService {
 
   onVideoChanged() {
     return this._session.on(SESSION_EVENTS.streamPropertyChanged)
-      .filter((event) => {
+      .filter((event: OTStreamPropertyChangedEvent) => {
         return event.changedProperty === STREAM_PROPERTY_CHANGED.hasVideo
-      }).do((event) => {
-        this._isVideoActive = event.newValue;
+      }).do((event: OTStreamPropertyChangedEvent) => {
+        this._isVideoActive = !isNullOrUndefined(event.newValue);
       });
   }
 

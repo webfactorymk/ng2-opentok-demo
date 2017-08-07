@@ -11,10 +11,10 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var core_1 = require("@angular/core");
 var config_1 = require("../../../config/config");
-var session_model_1 = require("./ng2-opentok/session.model");
-var publisher_model_1 = require("./ng2-opentok/publisher.model");
-var signal_model_1 = require("./ng2-opentok/signal.model");
-var subscriber_model_1 = require("./ng2-opentok/subscriber.model");
+var session_model_1 = require("./models/session.model");
+var publisher_model_1 = require("./models/publisher.model");
+var signal_model_1 = require("./models/signal.model");
+var subscriber_model_1 = require("./models/subscriber.model");
 var rxjs_1 = require("rxjs");
 exports.SIGNAL_TYPES = {
     imageShareOff: 'imageShareOff',

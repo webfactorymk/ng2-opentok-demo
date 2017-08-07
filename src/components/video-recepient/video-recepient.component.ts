@@ -1,5 +1,4 @@
 import {Component} from "@angular/core";
-import {OpentokService} from "../../services/opentok/opentok.service";
 import {VideoCallWidgetComponent} from "../shared/video-call-widget/video-call-widget.component";
 import {VideoCallStateManagerService} from "../shared/video-call-widget/video-call-state-manager.service";
 import {VideoCallManager} from "../../services/video-call-manager.service";
@@ -8,7 +7,7 @@ import {VideoCallManager} from "../../services/video-call-manager.service";
   selector: 'video-recepient',
   templateUrl: 'video-recepient.component.html',
   styleUrls: ['video-recepient.component.css'],
-  providers: [VideoCallManager, OpentokService, VideoCallStateManagerService],
+  providers: [VideoCallManager, VideoCallStateManagerService],
   viewProviders: [VideoCallWidgetComponent]
 })
 
