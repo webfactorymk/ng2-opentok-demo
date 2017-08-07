@@ -11,8 +11,6 @@ import {OTStreamPropertyChangedEvent} from "./models/events/stream-property-chan
 import {isNullOrUndefined} from "util";
 
 declare var OT: any;
-declare var scriptLoaded: any;
-
 const HAS_SYSTEM_REQUIREMENTS = 1;
 
 @Injectable()
@@ -30,7 +28,7 @@ export class OpentokService {
     this._apiKey = opentokConfig.apiKey;
   }
 
-  static isWebRTCSupported() {
+  isWebRTCSupported() {
     return OT.checkSystemRequirements() == HAS_SYSTEM_REQUIREMENTS;
   };
 
@@ -78,8 +76,6 @@ export class OpentokService {
     return this._session.on(SESSION_EVENTS.streamCreated).do((event: OTStreamEvent) => {
       if (!this._subscriber) {
         this._subscriber = this._session.subscribeToStream(event.stream, this._subscriberTag, subscriberProperties);
-        console.log("event.stream")
-        console.log(event.stream)
         this._isVideoActive = event.stream.hasAudio();
       }
     });

@@ -141,7 +141,7 @@ export class OTSession implements IOTEventListener {
 
   //https://tokbox.com/developer/sdks/js/reference/Session.html#subscribe
   subscribeToStream(stream: OTStream, subscriberContainer: string, subscriberProperties = {}): OTSubscriber {
-    return new OTSubscriber(this._session.subscribe(stream, subscriberContainer, subscriberProperties));
+    return new OTSubscriber(this._session.subscribe(stream.getStream(), subscriberContainer, subscriberProperties));
   }
 
   //https://tokbox.com/developer/sdks/js/reference/Session.html#unpublish
