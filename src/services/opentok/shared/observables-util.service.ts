@@ -1,5 +1,6 @@
 import {Observable, Observer} from "rxjs";
-import {OTEvent} from "../events/event.model";
+import {OTEventBase} from "../models/events/shared/event-base.model";
+
 export class ObservablesUtil {
 
   public static getObservableMethod(object: Object, func: any, param?: any): Observable<any> {
@@ -16,9 +17,9 @@ export class ObservablesUtil {
     });
   }
 
-  public static getObservableEvent(object: Object, func: any, param?: string, context?:Object): Observable<OTEvent> {
+  public static getObservableEvent(object: Object, func: any, param?: string, context?:Object): Observable<OTEventBase> {
     return Observable.create((observer: Observer<any>) => {
-      object[func](param, (event:OTEvent) => {
+      object[func](param, (event:OTEventBase) => {
         observer.next(event);
         observer.complete();
       }, context);

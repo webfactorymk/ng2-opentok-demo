@@ -1,7 +1,7 @@
 import {Observable} from "rxjs";
-import {ObservablesUtil} from "./shared/observables-util.service";
+import {ObservablesUtil} from "../shared/observables-util.service";
 import {OTEvent} from "./events/event.model";
-import {IOTEventListener} from "./shared/event-listener.interface";
+import {IOTEventListener} from "../shared/event-listener.interface";
 
 // Opentok Subscriber
 // https://tokbox.com/developer/sdks/js/reference/Subscriber.html

@@ -2,12 +2,13 @@ import {OTSignal} from "./signal.model";
 import {OTSubscriber} from "./subscriber.model";
 import {Observable} from "rxjs";
 import {OTPublisher} from "./publisher.model";
-import {ObservablesUtil} from "./shared/observables-util.service";
+import {ObservablesUtil} from "../shared/observables-util.service";
 import {OTEvent} from "./events/event.model";
 import {OTConnection} from "./connection.model";
 import {OTCapabilities} from "./capabilities.model";
 import {OTStream} from "./stream.model";
-import {IOTEventListener} from "./shared/event-listener.interface";
+import {IOTEventListener} from "../shared/event-listener.interface";
+import {OTEventBase} from "./events/shared/event-base.model";
 
 declare var OT: any;
 // Opentok session
@@ -68,17 +69,17 @@ export class OTSession implements IOTEventListener {
 
 
   //https://tokbox.com/developer/sdks/js/reference/Session.html#off
-  off(events?: string, context?: Object): Observable<OTEvent> {
+  off(events?: string, context?: Object): Observable<OTEventBase> {
     return ObservablesUtil.getObservableEvent(this._session, 'off', events, context);
   }
 
   //https://tokbox.com/developer/sdks/js/reference/Session.html#on
-  on(events: string, context?: Object): Observable<OTEvent> {
+  on(events: string, context?: Object): Observable<OTEventBase> {
     return ObservablesUtil.getObservableEvent(this._session, 'on', events, context);
   }
 
   //https://tokbox.com/developer/sdks/js/reference/Session.html#once
-  once(events: string, context?: Object): Observable<OTEvent> {
+  once(events: string, context?: Object): Observable<OTEventBase> {
     return ObservablesUtil.getObservableEvent(this._session, 'once', events, context);
   }
 

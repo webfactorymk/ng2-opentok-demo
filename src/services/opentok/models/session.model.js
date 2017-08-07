@@ -11,7 +11,7 @@ var __extends = (this && this.__extends) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 var subscriber_model_1 = require("./subscriber.model");
-var ot_model_model_1 = require("./shared/ot-model.model");
+var ot_model_model_1 = require("././ot-model.model");
 // Opentok session
 // https://tokbox.com/developer/guides/connect-session/js/#initialize_session
 // https://tokbox.com/developer/sdks/js/reference/Session.html

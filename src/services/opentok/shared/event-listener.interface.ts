@@ -1,5 +1,5 @@
 import {Observable} from "rxjs";
-import {OTEvent} from "../events/event.model";
+import {OTEvent} from "../models/events/event.model";
 
 export interface IOTEventListener {
   // Adds an event handler function for one or more events. The handler is emitting values for the returned observable in this library.
