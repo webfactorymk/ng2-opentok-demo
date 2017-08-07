@@ -1,12 +1,12 @@
 import {Injectable} from "@angular/core";
-import {OTSession, SESSION_EVENTS, SESSION_DISCONNECT_REASONS, STREAM_PROPERTY_CHANGED} from "./models/session.model";
+import {OTSession, SESSION_EVENTS} from "./models/session.model";
 import {OTPublisher, PUBLISHER_EVENTS} from "./models/publisher.model";
 import {OTSubscriber} from "./models/subscriber.model";
 import {OTSignal} from "./models/signal.model";
 import {Observable} from "rxjs";
 import {OpentokConfig} from "./opentok.config";
 import {OTStreamEvent} from "./models/events/stream-event.model";
-import {SessionDisconnectEvent} from "./models/events/session-disconnect-event.model";
+import {OTSessionDisconnectEvent} from "./models/events/session-disconnect-event.model";
 import {OTStreamPropertyChangedEvent} from "./models/events/stream-property-changed-event.model";
 import {isNullOrUndefined} from "util";
 
@@ -80,7 +80,7 @@ export class OpentokService {
         this._subscriber = this._session.subscribeToStream(event.stream, this._subscriberTag, subscriberProperties);
         console.log("event.stream")
         console.log(event.stream)
-        // this._isVideoActive = event.stream.hasAudio();
+        this._isVideoActive = event.stream.hasAudio();
       }
     });
   }
@@ -91,8 +91,8 @@ export class OpentokService {
   }
 
   onNetworkFailedForPublisher() {
-    return this._session.on(SESSION_EVENTS.sessionDisconnected).filter((event: SessionDisconnectEvent) => {
-      return event.reason === SESSION_DISCONNECT_REASONS.networkDisconnected;
+    return this._session.on(SESSION_EVENTS.sessionDisconnected).filter((event: OTSessionDisconnectEvent) => {
+      return event.isNetworkDisconnected();
     });
   }
 
@@ -105,7 +105,7 @@ export class OpentokService {
   onVideoChanged() {
     return this._session.on(SESSION_EVENTS.streamPropertyChanged)
       .filter((event: OTStreamPropertyChangedEvent) => {
-        return event.changedProperty === STREAM_PROPERTY_CHANGED.hasVideo
+        return event.hasVideoChanged();
       }).do((event: OTStreamPropertyChangedEvent) => {
         this._isVideoActive = !isNullOrUndefined(event.newValue);
       });

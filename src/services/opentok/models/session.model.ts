@@ -9,6 +9,11 @@ import {OTCapabilities} from "./capabilities.model";
 import {OTStream} from "./stream.model";
 import {IOTEventListener} from "../shared/event-listener.interface";
 import {OTEventBase} from "./events/shared/event-base.model";
+import {OTConnectionEvent} from "./events/connection-event.model";
+import {OTSessionConnectEvent} from "./events/session-connect-event.model";
+import {OTSessionDisconnectEvent} from "./events/session-disconnect-event.model";
+import {OTStreamEvent} from "./events/stream-event.model";
+import {OTStreamPropertyChangedEvent} from "./events/stream-property-changed-event.model";
 
 declare var OT: any;
 // Opentok session
@@ -25,19 +30,6 @@ export const SESSION_EVENTS = {
   streamCreated: "streamCreated",
   streamDestroyed: "streamDestroyed",
   streamPropertyChanged: "streamPropertyChanged",
-}
-
-export const SESSION_DISCONNECT_REASONS = {
-  clientDisconnected: "clientDisconnected",
-  forceDisconnected: "forceDisconnected",
-  networkDisconnected: "networkDisconnected"
-}
-
-//https://tokbox.com/developer/sdks/js/reference/StreamPropertyChangedEvent.html
-export const STREAM_PROPERTY_CHANGED = {
-  hasVideo: "hasVideo",
-  hasAudio: "hasAudio",
-  videoDimensions: "videoDimensions"
 }
 
 export class OTSession implements IOTEventListener {
@@ -69,20 +61,25 @@ export class OTSession implements IOTEventListener {
 
 
   //https://tokbox.com/developer/sdks/js/reference/Session.html#off
-  off(events?: string, context?: Object): Observable<OTEventBase> {
-    return ObservablesUtil.getObservableEvent(this._session, 'off', events, context);
+  off(event?: string, context?: Object): Observable<OTEventBase> {
+    return ObservablesUtil.getObservableEvent(this._session, 'off', event, context).map((e) => {
+      return this._mapEvent(event, e);
+    });
   }
 
   //https://tokbox.com/developer/sdks/js/reference/Session.html#on
-  on(events: string, context?: Object): Observable<OTEventBase> {
-    return ObservablesUtil.getObservableEvent(this._session, 'on', events, context);
+  on(event: string, context?: Object): Observable<OTEventBase> {
+    return ObservablesUtil.getObservableEvent(this._session, 'on', event, context).map((e) => {
+      return this._mapEvent(event, e);
+    });
   }
 
   //https://tokbox.com/developer/sdks/js/reference/Session.html#once
-  once(events: string, context?: Object): Observable<OTEventBase> {
-    return ObservablesUtil.getObservableEvent(this._session, 'once', events, context);
+  once(event: string, context?: Object): Observable<OTEventBase> {
+    return ObservablesUtil.getObservableEvent(this._session, 'once', event, context).map((e) => {
+      return this._mapEvent(event, e);
+    });
   }
-
 
   //https://tokbox.com/developer/sdks/js/reference/Session.html#connect
   connect(token: string): Observable<boolean> {
@@ -126,8 +123,10 @@ export class OTSession implements IOTEventListener {
 
   // Listen to signal
   // https://tokbox.com/developer/sdks/js/reference/Session.html#signal
-  onSignal(signal: OTSignal): Observable<OTEvent> {
-    return this.on(signal.getSignalEvent());
+  onSignal(signal: OTSignal): Observable<OTSignal> {
+    return this.on(signal.getSignalEvent()).map((signal: any)=>{
+      return new OTSignal(signal);
+    });
   }
 
   //https://tokbox.com/developer/sdks/js/reference/Session.html#publish
@@ -157,5 +156,50 @@ export class OTSession implements IOTEventListener {
 
   canPublish(): boolean {
     return this._session.capabilities.publish == 1;
+  }
+
+  private _mapEvent(eventName: string, event: any): OTEventBase {
+
+    let e: OTEventBase;
+
+    switch (eventName) {
+      case SESSION_EVENTS.connectionCreated: {
+        e = new OTConnectionEvent(event);
+        break;
+      }
+      case SESSION_EVENTS.connectionDestroyed: {
+        e = new OTConnectionEvent(event);
+        break;
+      }
+      case SESSION_EVENTS.sessionConnected: {
+        e = new OTSessionConnectEvent(event);
+        break;
+      }
+      case SESSION_EVENTS.sessionDisconnected: {
+        e = new OTSessionDisconnectEvent(event);
+        break;
+      }
+      case SESSION_EVENTS.sessionReconnecting: {
+        e = new OTEvent(event);
+        break;
+      }
+      case SESSION_EVENTS.sessionReconnected: {
+        e = new OTEvent(event);
+        break;
+      }
+      case SESSION_EVENTS.streamCreated: {
+        e = new OTStreamEvent(event);
+        break;
+      }
+      case SESSION_EVENTS.streamDestroyed: {
+        e = new OTStreamEvent(event);
+        break;
+      }
+      case SESSION_EVENTS.streamPropertyChanged: {
+        e = new OTStreamPropertyChangedEvent(event);
+        break;
+      }
+    }
+    return e;
   }
 }

@@ -4,6 +4,12 @@ import {ObservablesUtil} from "../shared/observables-util.service";
 import {OTEvent} from "./events/event.model";
 import {OTStream} from "./stream.model";
 import {IOTEventListener} from "../shared/event-listener.interface";
+import {OTEventBase} from "./events/shared/event-base.model";
+import {OTVideoEnabledChangedEvent} from "./events/video-enabled-chnaged-event.model";
+import {OTVideoElementCreatedEvent} from "./events/video-element-created-event.model";
+import {OTAudioLevelUpdatedEvent} from "./events/audio-level-updated-event.model";
+import {OTStreamEvent} from "./events/stream-event.model";
+import {OTVideoDimensionsChangedEvent} from "./events/video-dimensions-changed-event.model";
 
 declare var OT: any;
 declare var scriptLoaded: any;
@@ -39,20 +45,25 @@ export class OTPublisher implements IOTEventListener {
   }
 
   //https://tokbox.com/developer/sdks/js/reference/Publisher.html#off
-  off(events?: string, context?: Object): Observable<OTEvent> {
-    return ObservablesUtil.getObservableEvent(this.opentokPublisher, 'off', events, context);
+  off(event?: string, context?: Object): Observable<OTEventBase> {
+    return ObservablesUtil.getObservableEvent(this.opentokPublisher, 'off', event, context).map((e) => {
+      return this._mapEvent(event, e);
+    });
   }
 
   //https://tokbox.com/developer/sdks/js/reference/Publisher.html#on
-  on(events?: string, context?: Object): Observable<OTEvent> {
-    return ObservablesUtil.getObservableEvent(this.opentokPublisher, 'on', events, context);
+  on(event?: string, context?: Object): Observable<OTEventBase> {
+    return ObservablesUtil.getObservableEvent(this.opentokPublisher, 'on', event, context).map((e) => {
+      return this._mapEvent(event, e);
+    });
   }
 
   //https://tokbox.com/developer/sdks/js/reference/Publisher.html#once
-  once(events?: string, context?: Object): Observable<OTEvent> {
-    return ObservablesUtil.getObservableEvent(this.opentokPublisher, 'once', events, context);
+  once(event?: string, context?: Object): Observable<OTEventBase> {
+    return ObservablesUtil.getObservableEvent(this.opentokPublisher, 'once', event, context).map((e) => {
+      return this._mapEvent(event, e);
+    });
   }
-
 
   getAccessAllowed(): boolean {
     return this.opentokPublisher.accessAllowed;
@@ -108,4 +119,56 @@ export class OTPublisher implements IOTEventListener {
     this.opentokPublisher.setStyle(obj);
   }
 
+  private _mapEvent(eventName: string, event: any): OTEventBase {
+
+    let e: OTEventBase;
+
+    switch (eventName) {
+      case PUBLISHER_EVENTS.accessAllowed: {
+        e = new OTEvent(event);
+        break;
+      }
+      case PUBLISHER_EVENTS.accessDenied: {
+        e = new OTEvent(event);
+        break;
+      }
+      case PUBLISHER_EVENTS.accessDialogOpened: {
+        e = new OTEvent(event);
+        break;
+      }
+      case PUBLISHER_EVENTS.accessDialogClosed: {
+        e = new OTEvent(event);
+        break;
+      }
+      case PUBLISHER_EVENTS.streamCreated: {
+        e = new OTStreamEvent(event);
+        break;
+      }
+      case PUBLISHER_EVENTS.streamDestroyed: {
+        e = new OTStreamEvent(event);
+        break;
+      }
+      case PUBLISHER_EVENTS.audioLevelUpdated: {
+        e = new OTAudioLevelUpdatedEvent(event);
+        break;
+      }
+      case PUBLISHER_EVENTS.destroyed: {
+        e = new OTEvent(event);
+        break;
+      }
+      case PUBLISHER_EVENTS.mediaStopped: {
+        e = new OTStreamEvent(event);
+        break;
+      }
+      case PUBLISHER_EVENTS.videoDimensionsChanged: {
+        e = new OTVideoDimensionsChangedEvent(event);
+        break;
+      }
+      case PUBLISHER_EVENTS.videoElementCreated: {
+        e = new OTVideoElementCreatedEvent(event);
+        break;
+      }
+    }
+    return e;
+  }
 }

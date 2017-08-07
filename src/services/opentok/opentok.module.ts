@@ -2,7 +2,7 @@ import {NgModule, ModuleWithProviders} from "@angular/core";
 import {OpentokService} from "./opentok.service";
 import {OpentokConfig} from "./opentok.config";
 
-@NgModule({})
+@NgModule()
 
 export class OpentokModule {
   static forRoot(opentokConfig?: OpentokConfig): ModuleWithProviders {
