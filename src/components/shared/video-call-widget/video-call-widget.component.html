@@ -1,10 +1,10 @@
 <img src="assets/images/phone-ringing.gif" *ngIf="hasIncomingCall && !isCallEstablished">
 
 <div class="pull-right" *ngIf="msgFromBuddy">
- <i>Message from buddy: </i>  {{msgFromBuddy}}
- <a (click)="clearMsg()">
-   <img class="remove-btn" src="assets/images/remove-icon-png-22.png">
- </a>
+  <i>Message from buddy: </i> {{msgFromBuddy}}
+  <a (click)="clearMsg()">
+    <img class="remove-btn" src="assets/images/remove-icon-png-22.png">
+  </a>
 </div>
 
 <div class="call_buttons btn-group">
@@ -17,7 +17,7 @@
     Make a video call
   </button>
 
-  <button class="btn btn-danger" (click)="hungUp()" *ngIf="isIncomingCallAnswered || isCallEstablished"> End video
+  <button class="btn btn-danger" (click)="hangUp()" *ngIf="isIncomingCallAnswered || isCallEstablished"> End video
     call
   </button>
 </div>
@@ -26,8 +26,12 @@
   <button class="btn btn-primary btn-sm" (click)="takeScreenshot()" *ngIf="isIncomingCallAnswered && isVideoOn"> Take
     screenshot from buddy
   </button>
+</div>
 
-  <button class="btn btn-info btn-sm" (click)="sendSignalToBuddy()" *ngIf="isIncomingCallAnswered && isVideoOn">
+
+<div class="screenshot_buttons btn-group form-inline" *ngIf="isIncomingCallAnswered && isVideoOn">
+  <input [(ngModel)]="msgForBuddy" class="form-control col-lg-1">
+  <button class="btn btn-info btn-sm" (click)="sendSignalToBuddy()">
     Send message
   </button>
 </div>

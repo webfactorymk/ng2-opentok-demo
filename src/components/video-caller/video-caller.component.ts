@@ -1,6 +1,6 @@
 import {Component} from "@angular/core";
 import {VideoCallWidgetComponent} from "../shared/video-call-widget/video-call-widget.component";
-import {VideoCallStateManagerService} from "../shared/video-call-widget/video-call-state-manager.service";
+import {VideoCallStateManagerService} from "../../services/video-call-state-manager.service";
 import {VideoCallManager} from "../../services/video-call-manager.service";
 
 @Component({

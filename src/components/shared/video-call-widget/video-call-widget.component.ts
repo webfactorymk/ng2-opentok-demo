@@ -1,6 +1,6 @@
 import {Component, Input, OnInit} from "@angular/core";
 import {LoadingComponent} from "../loading/loading.component";
-import {VideoCallStates, VideoCallStateManagerService} from "./video-call-state-manager.service";
+import {VideoCallStates, VideoCallStateManagerService} from "../../../services/video-call-state-manager.service";
 import {VideoCallManager} from "../../../services/video-call-manager.service";
 
 @Component({
@@ -23,6 +23,7 @@ export class VideoCallWidgetComponent implements OnInit {
 
   screenshotOfTheOtherUser: string;
   msgFromBuddy: string;
+  msgForBuddy: string;
 
   @Input() sessionId: string;
   @Input() token: string;
@@ -35,7 +36,6 @@ export class VideoCallWidgetComponent implements OnInit {
     this.listenToIncomingCalls();
   }
 
-
   call() {
     if (!this.isCallEstablished) {
       this.videoCallManager.call();
@@ -43,8 +43,8 @@ export class VideoCallWidgetComponent implements OnInit {
     }
   }
 
-  hungUp() {
-    this.videoCallManager.hungUp();
+  hangUp() {
+    this.videoCallManager.hangUp();
     this.hideVideosSection();
   }
 
@@ -75,7 +75,7 @@ export class VideoCallWidgetComponent implements OnInit {
   }
 
   sendSignalToBuddy(){
-    this.videoCallManager.sendSignal(" SIGNAL WAS SENT. YEY");
+    this.videoCallManager.sendSignal(this.msgForBuddy);
   }
 
   clearMsg(){
@@ -123,7 +123,6 @@ export class VideoCallWidgetComponent implements OnInit {
         this.isCallAnswered = true;
         this.hasIncomingCall = false;
         this.isIncomingCallAnswered = true;
-        this._listenToSignals();
         break;
       }
 
