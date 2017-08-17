@@ -127,7 +127,7 @@ export class VideoCallWidgetComponent implements OnInit {
       }
 
       case VideoCallStates.callHungUpByOther: {
-        this.hideVideosSection();
+        this.hangUp();
         break;
       }
     }
