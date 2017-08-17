@@ -1,6 +1,18 @@
 # OpentokNg2Demo
+This is a demo application where you can see how ng2-opentok is implemented. The project supports video and text chat between two entities.
 
-This project was generated with [angular-cli](https://github.com/angular/angular-cli) version 1.0.0-beta.24.
+## Making a video call
+
+To make a video call open two tabs:
+  * Caller tab `http://localhost:4200/caller`
+  * Recepient tab `http://localhost:4200/recepient`
+
+You can use this views to test:
+ * making/ending a video call
+ * send text message to the other user
+ * get a sceenshot from the other user
+ * add/remove your video stream
+ 
 
 ## Development server
 Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
