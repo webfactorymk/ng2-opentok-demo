@@ -1,10 +1,10 @@
-import {OpentokService} from "./opentok/opentok.service";
 import {
   VideoCallStateManagerService,
   VideoCallStates
 } from "../components/shared/video-call-widget/video-call-state-manager.service";
 import {Observable} from "rxjs";
 import {Injectable} from "@angular/core";
+
 
 export const Signals = {
   showMessage: "showMessage",
@@ -18,7 +18,6 @@ export class VideoCallManager {
 
   constructor(private _callService: OpentokService,
               private videoCallStateManager: VideoCallStateManagerService) {
-
     videoCallStateManager.changeState(VideoCallStates.noCall);
   }
 

@@ -8,7 +8,8 @@ import {VideoCallerComponent} from "../video-caller/video-caller.component";
 import {routing} from "./app.routing";
 import {LoadingComponent} from "../shared/loading/loading.component";
 import {VideoCallWidgetComponent} from "../shared/video-call-widget/video-call-widget.component";
-import {OpentokModule} from "../../services/opentok/opentok.module";
+import {OpentokModule} from "";
+
 
 @NgModule({
   declarations: [
