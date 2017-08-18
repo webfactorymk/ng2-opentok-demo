@@ -1,5 +1,5 @@
 # OpentokNg2Demo
-This is a demo application where you can see how ng2-opentok is implemented. The project supports video and text chat between two entities.
+This is a demo application where you can see how ng2-opentok is used. The project supports video and text chat between two entities.
 
 ## Making a video call
 
