@@ -1,7 +1,4 @@
-import {
-  VideoCallStateManagerService,
-  VideoCallStates
-} from "./video-call-state-manager.service";
+import {VideoCallStateManagerService, VideoCallStates} from "./video-call-state-manager.service";
 import {Observable} from "rxjs";
 import {Injectable} from "@angular/core";
 import {OpentokService} from "ng2-opentok/dist/opentok.service";
@@ -9,8 +6,7 @@ import {OTSignalEvent} from "ng2-opentok/dist/models/events/signal-event.model";
 import {OTSession} from "ng2-opentok/dist/models/session.model";
 
 export const Signals = {
-  showMessage: "showMessage",
-
+  showMessage: "showMessage"
 }
 
 @Injectable()
@@ -18,6 +14,8 @@ export class VideoCallManager {
 
   private _isVideoActive: boolean = false;
   private _session: OTSession;
+  readonly publisherTag: string = "publisher";
+  readonly subscriberTag: string = "subscriber";
 
   constructor(private _callService: OpentokService,
               private videoCallStateManager: VideoCallStateManagerService) {
@@ -46,7 +44,7 @@ export class VideoCallManager {
     return this._callService.connectToSession(sessionId, token)
       .do((session: OTSession) => {
         this._session = session;
-        this._callService.onIncomingCall(this.subscriberProperties).subscribe(() => {
+        this._callService.onIncomingCall(this.subscriberTag, this.subscriberProperties).subscribe(() => {
           this.videoCallStateManager.changeState(VideoCallStates.incomingCall);
         });
 
@@ -76,7 +74,7 @@ export class VideoCallManager {
   }
 
   answerCall(): void {
-    this._callService.call(this.publisherProperties).subscribe(() => {
+    this._callService.call(this.publisherTag, this.publisherProperties).subscribe(() => {
       this.initMediaRequirements();
       this._isVideoActive = true;
       this.videoCallStateManager.changeState(VideoCallStates.callStarted);
@@ -89,12 +87,12 @@ export class VideoCallManager {
   }
 
   call(): void {
-    this._callService.onIncomingCall(this.subscriberProperties).subscribe(() => {
+    this._callService.onIncomingCall(this.subscriberTag, this.subscriberProperties).subscribe(() => {
       this._isVideoActive = true;
       this.videoCallStateManager.changeState(VideoCallStates.callStarted);
     });
 
-    this._callService.call(this.publisherProperties).subscribe(() => {
+    this._callService.call(this.publisherTag, this.publisherProperties).subscribe(() => {
       this.initMediaRequirements();
       this.videoCallStateManager.changeState(VideoCallStates.calling);
     });
