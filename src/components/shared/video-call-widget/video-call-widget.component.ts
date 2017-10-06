@@ -1,7 +1,7 @@
-import {Component, Input, OnInit} from "@angular/core";
+import {Component, Input, OnInit, OnDestroy} from "@angular/core";
 import {LoadingComponent} from "../loading/loading.component";
-import {VideoCallStates, VideoCallStateManagerService} from "../../../services/video-call-state-manager.service";
-import {VideoCallManager} from "../../../services/video-call-manager.service";
+import {VideoCallStateManagerService} from "../../../services/video-call-state-manager.service";
+import {VideoCallManager, VideoCallLifeCycles} from "../../../services/video-call-manager.service";
 
 @Component({
   selector: 'video-call-widget',
@@ -10,9 +10,7 @@ import {VideoCallManager} from "../../../services/video-call-manager.service";
   viewProviders: [LoadingComponent]
 })
 
-export class VideoCallWidgetComponent implements OnInit {
-
-
+export class VideoCallWidgetComponent implements OnInit, VideoCallLifeCycles, OnDestroy {
   isCallEstablished: boolean = false;
   isCallAnswered: boolean = false;
 
@@ -25,6 +23,22 @@ export class VideoCallWidgetComponent implements OnInit {
   msgFromBuddy: string;
   msgForBuddy: string;
 
+  publisherProperties = {
+    insertMode: 'append',
+    width: '100%',
+    height: '100%',
+    usePreviousDeviceSelection: true
+  };
+
+  subscriberProperties = {
+    insertMode: 'append',
+    width: '100%',
+    height: '100%'
+  };
+
+  publisherTag: string = "publisher";
+  subscriberTag: string = "subscriber";
+
   @Input() sessionId: string;
   @Input() token: string;
 
@@ -32,13 +46,13 @@ export class VideoCallWidgetComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this._subscribeToVideoCallState();
-    this.listenToIncomingCalls();
+    this.videoCallManager.addVideoCallLifeCyclesListener(this);
+    this._initIncomingCallRequirements();
   }
 
   call() {
     if (!this.isCallEstablished) {
-      this.videoCallManager.call();
+      this.videoCallManager.call(this.publisherTag, this.publisherProperties);
       this.isVideoOn = true;
     }
   }
@@ -56,7 +70,7 @@ export class VideoCallWidgetComponent implements OnInit {
   }
 
   answerCall() {
-    this.videoCallManager.answerCall();
+    this.videoCallManager.answerCall(this.publisherTag, this.publisherProperties);
     this.isVideoOn = true;
   }
 
@@ -74,63 +88,67 @@ export class VideoCallWidgetComponent implements OnInit {
     this.isVideoOn = true;
   }
 
-  sendSignalToBuddy(){
+  sendSignalToBuddy() {
     this.videoCallManager.sendSignal(this.msgForBuddy);
   }
 
-  clearMsg(){
+  clearMsg() {
     this.msgFromBuddy = null;
   }
 
-  private listenToIncomingCalls() {
-    this.videoCallManager.initIncomingCallRequirements(this.sessionId, this.token).subscribe(()=>{
-      this._listenToSignals();
-    });
+  private _initIncomingCallRequirements() {
+    this.videoCallManager.initIncomingCallRequirements(this.sessionId, this.token, this.publisherTag, this.publisherProperties, this.subscriberTag, this.subscriberProperties)
+      .subscribe();
   }
 
-  private _listenToSignals(){
-    this.videoCallManager.onSignal().subscribe((msg: any) => {
-      this.msgFromBuddy = msg.data;
-    });
+
+  onIncomingCall(): void {
+    this.hasIncomingCall = true;
   }
 
-  private _subscribeToVideoCallState() {
-    this.videoCallManager.getStateChanges().subscribe((newState: number) => {
-      this._handleStates(newState);
-    });
+  onMediaAccessRequest(): void {
+    console.log("MEDIA ACCESS REQUEST")
   }
 
-  private _handleStates(newState: number) {
-    switch (newState) {
-      case VideoCallStates.noCall: {
-        this.listenToIncomingCalls();
-        break;
-      }
+  onMediaAccessDenied(): void {
+    console.log("MEDIA ACCESS DENIED")
+  }
 
-      case VideoCallStates.incomingCall: {
-        this.hasIncomingCall = true;
-        break;
-      }
+  onCalling(): void {
+    console.log("CALLING")
+    this.isCallEstablished = true;
+    this.hasIncomingCall = false;
+    this.isIncomingCallAnswered = false;
+  }
 
-      case VideoCallStates.calling: {
-        this.isCallEstablished = true;
-        this.hasIncomingCall = false;
-        this.isIncomingCallAnswered = false;
-        break;
-      }
+  onCallStarted(): void {
+    console.log("onCallStarted")
+    this.isCallAnswered = true;
+    this.hasIncomingCall = false;
+    this.isIncomingCallAnswered = true;
+  }
 
-      case VideoCallStates.callStarted: {
-        this.isCallAnswered = true;
-        this.hasIncomingCall = false;
-        this.isIncomingCallAnswered = true;
-        break;
-      }
+  onCallHungUpByOther(): void {
+    console.log("onCallHungUpByOther")
+    this.hangUp();
+  }
 
-      case VideoCallStates.callHungUpByOther: {
-        this.hangUp();
-        break;
-      }
-    }
+  onCallHungUp(): void {
+    console.log("onCallHungUp")
+  }
+
+  onNetworkLost(): void {
+    console.log("Network Lost")
+  }
+
+  onMissedCall(): void {
+    console.log("Missed Call")
+  }
+  onMessageReceived(msg:string){
+    this.msgFromBuddy = msg;
+  }
+  ngOnDestroy() {
+    this.videoCallManager.removeVideoCallLifeCyclesListener(this);
   }
 
 }
