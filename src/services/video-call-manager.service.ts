@@ -4,6 +4,7 @@ import {Injectable} from "@angular/core";
 import {OpentokService} from "ng2-opentok/dist/opentok.service";
 import {OTSignalEvent} from "ng2-opentok/dist/models/events/signal-event.model";
 import {OTSession} from "ng2-opentok/dist/models/session.model";
+import {OTStreamEvent} from "ng2-opentok";
 
 export const Signals = {
   showMessage: "showMessage"
@@ -13,19 +14,17 @@ export interface VideoCallLifeCycles {
   onIncomingCall(): void;
   onMediaAccessRequest(): void;
   onMediaAccessDenied(): void;
-  onCalling(): void;
-  onCallStarted(): void;
   onCallHungUpByOther(): void;
   onCallHungUp(): void;
   onNetworkLost(): void;
   onMissedCall(): void;
   onMessageReceived(message: string): void;
+  onVideoChanged():void;
 }
 
 @Injectable()
 export class VideoCallManager {
 
-  private _isVideoActive: boolean = false;
   private _session: OTSession;
   private _listeners: VideoCallLifeCycles[] = [];
   private subscriptions: Subscription[] = [];
@@ -41,7 +40,7 @@ export class VideoCallManager {
 
   removeVideoCallLifeCyclesListener(element: VideoCallLifeCycles) {
     this.unsubscribeFromAllHooks();
-    var index = this._listeners.indexOf(element, 0);
+    let index = this._listeners.indexOf(element, 0);
     if (index > -1) {
       this._listeners.splice(index, 1);
     }
@@ -51,7 +50,7 @@ export class VideoCallManager {
     return this._callService.connectToSession(sessionId, token)
       .do((session: OTSession) => {
         this._session = session;
-         this._listenToEndCall();
+        this._listenToEndCall();
         this._listenToIncomingCall(subscriberTag, subscriberProperties);
         this._listenToNetworkFailedForPublisher();
         this._listenToMessage();
@@ -60,46 +59,28 @@ export class VideoCallManager {
 
   onSignal(): Observable<OTSignalEvent> {
     return this._callService.onSignal(Signals.showMessage)
-
   }
 
   sendSignal(data: string) {
     this._callService.sendSignal(Signals.showMessage, data).subscribe();
   }
 
-  answerCall(publisherTag: string, publisherProperties: {}): void {
-    this._callService.initCaller(publisherTag, publisherProperties);
-    let sub = this._callService.call().do(() => {
-      this._listenToOpenMediaAccessDialog();
-      this._listenToMediaAccessDenied();
-      this._listeners.forEach((elem: VideoCallLifeCycles) => {
-        this._isVideoActive = true;
-        elem.onCallStarted();
-      });
-    }).subscribe();
-    this.subscriptions.push(sub);
-  }
-
   hangUp(): void {
     this._callService.hangUp();
+    this.unsubscribeFromAllHooks();
+    this._session = null;
     this._listeners.forEach((elem: VideoCallLifeCycles) => {
       elem.onCallHungUp();
     });
   }
 
-  call(publisherTag: string, publisherProperties: {}): void {
+  call(publisherTag: string, publisherProperties: {}): Observable<boolean> {
     this._callService.initCaller(publisherTag, publisherProperties);
-    let sub = this._callService.call().do(() => {
+    return this._callService.call().do(() => {
       this._listenToOpenMediaAccessDialog();
       this._listenToMediaAccessDenied();
-      this._listeners.forEach((elem: VideoCallLifeCycles) => {
-        elem.onCalling();
-      });
-    }).subscribe();
-    this.subscriptions.push(sub);
-
-    let videoSub = this._callService.onVideoChanged().subscribe();
-    this.subscriptions.push(videoSub);
+      this._listenToVideoChanges();
+    });
   }
 
   getSubscriberScreenshot(): string {
@@ -129,10 +110,12 @@ export class VideoCallManager {
   }
 
   private _listenToIncomingCall(subscriberTag: string, subscriberProperties: {}) {
-    let sub = this._callService.onIncomingCall(subscriberTag, subscriberProperties).subscribe(() => {
+    let sub = this._callService.onIncomingCall(subscriberTag, subscriberProperties)
+      .subscribe((event: OTStreamEvent)=> {
       this._listeners.forEach((elem: VideoCallLifeCycles) => {
         elem.onIncomingCall();
       });
+
     });
     this.subscriptions.push(sub);
   }
@@ -166,6 +149,15 @@ export class VideoCallManager {
           elem.onMessageReceived(signal.data);
         });
       });
+    this.subscriptions.push(sub);
+  }
+
+  private _listenToVideoChanges(){
+    let sub = this._callService.onVideoChanged().subscribe(()=>{
+      this._listeners.forEach((elem: VideoCallLifeCycles) => {
+        elem.onVideoChanged();
+      });
+    });
     this.subscriptions.push(sub);
   }
 

@@ -50,16 +50,28 @@ export class VideoCallWidgetComponent implements OnInit, VideoCallLifeCycles, On
     this._initIncomingCallRequirements();
   }
 
+  private _initIncomingCallRequirements() {
+    this.videoCallManager.initIncomingCallRequirements(this.sessionId, this.token, this.publisherTag, this.publisherProperties, this.subscriberTag, this.subscriberProperties)
+      .subscribe();
+
+  }
+
   call() {
     if (!this.isCallEstablished) {
-      this.videoCallManager.call(this.publisherTag, this.publisherProperties);
-      this.isVideoOn = true;
+      this.isCallEstablished = true;
+      this.videoCallManager.call(this.publisherTag, this.publisherProperties).subscribe(() => {
+        console.log("CALLING")
+        this.isIncomingCallAnswered = false;
+        this.hasIncomingCall = false;
+        this.isVideoOn = true;
+      });
     }
   }
 
   hangUp() {
     this.videoCallManager.hangUp();
     this.hideVideosSection();
+    this._initIncomingCallRequirements();
   }
 
   hideVideosSection() {
@@ -70,8 +82,13 @@ export class VideoCallWidgetComponent implements OnInit, VideoCallLifeCycles, On
   }
 
   answerCall() {
-    this.videoCallManager.answerCall(this.publisherTag, this.publisherProperties);
-    this.isVideoOn = true;
+    this.videoCallManager.call(this.publisherTag, this.publisherProperties).subscribe(() => {
+      this.isVideoOn = true;
+      console.log("onIncomingCallAnswered")
+      this.hasIncomingCall = false;
+      this.isIncomingCallAnswered = true;
+    });
+
   }
 
   takeScreenshot() {
@@ -86,6 +103,7 @@ export class VideoCallWidgetComponent implements OnInit, VideoCallLifeCycles, On
   showVideo() {
     this.videoCallManager.showVideo(true);
     this.isVideoOn = true;
+
   }
 
   sendSignalToBuddy() {
@@ -96,14 +114,14 @@ export class VideoCallWidgetComponent implements OnInit, VideoCallLifeCycles, On
     this.msgFromBuddy = null;
   }
 
-  private _initIncomingCallRequirements() {
-    this.videoCallManager.initIncomingCallRequirements(this.sessionId, this.token, this.publisherTag, this.publisherProperties, this.subscriberTag, this.subscriberProperties)
-      .subscribe();
-  }
-
-
   onIncomingCall(): void {
-    this.hasIncomingCall = true;
+    if (this.isCallEstablished) {
+      console.log("onCallStarted")
+      this.isCallAnswered = true;
+    } else {
+      console.log("onIncomingCall")
+      this.hasIncomingCall = true;
+    }
   }
 
   onMediaAccessRequest(): void {
@@ -112,20 +130,6 @@ export class VideoCallWidgetComponent implements OnInit, VideoCallLifeCycles, On
 
   onMediaAccessDenied(): void {
     console.log("MEDIA ACCESS DENIED")
-  }
-
-  onCalling(): void {
-    console.log("CALLING")
-    this.isCallEstablished = true;
-    this.hasIncomingCall = false;
-    this.isIncomingCallAnswered = false;
-  }
-
-  onCallStarted(): void {
-    console.log("onCallStarted")
-    this.isCallAnswered = true;
-    this.hasIncomingCall = false;
-    this.isIncomingCallAnswered = true;
   }
 
   onCallHungUpByOther(): void {
@@ -144,9 +148,15 @@ export class VideoCallWidgetComponent implements OnInit, VideoCallLifeCycles, On
   onMissedCall(): void {
     console.log("Missed Call")
   }
-  onMessageReceived(msg:string){
+
+  onMessageReceived(msg: string) {
     this.msgFromBuddy = msg;
   }
+
+  onVideoChanged() {
+    console.log("onVideoChanged")
+  }
+
   ngOnDestroy() {
     this.videoCallManager.removeVideoCallLifeCyclesListener(this);
   }

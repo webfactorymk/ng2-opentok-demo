@@ -22,19 +22,23 @@
   </button>
 </div>
 
+<ng-container  *ngIf="isIncomingCallAnswered && isVideoOn">
+
 <div class="screenshot_buttons btn-group">
-  <button class="btn btn-primary btn-sm" (click)="takeScreenshot()" *ngIf="isIncomingCallAnswered && isVideoOn"> Take
+  <button class="btn btn-primary btn-sm" (click)="takeScreenshot()"> Take
     screenshot from buddy
   </button>
 </div>
 
 
-<div class="screenshot_buttons btn-group form-inline" *ngIf="isIncomingCallAnswered && isVideoOn">
+<div class="screenshot_buttons btn-group form-inline">
   <input [(ngModel)]="msgForBuddy" class="form-control col-lg-1">
   <button class="btn btn-info btn-sm" (click)="sendSignalToBuddy()">
     Send message
   </button>
 </div>
+
+</ng-container>
 
 <div class="video_toggle_buttons btn-group">
   <button class="btn btn-warning btn-sm" (click)="removeVideo()" *ngIf="isIncomingCallAnswered && isVideoOn"> Remove
