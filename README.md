@@ -7,7 +7,7 @@ To make a video call open two tabs:
   * Caller tab `http://localhost:4200/caller`
   * Recepient tab `http://localhost:4200/recepient`
 
-You can use this views to test:
+You can use the two views to test:
  * making/ending a video call
  * send text message to the other user
  * get a sceenshot from the other user
