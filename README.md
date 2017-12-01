@@ -14,13 +14,16 @@ To make a video call open two tabs:
 
 You can use the two views to test:
  * making/ending a video call
-Calling
+  
+  Calling
+  
 ![caller-sc2](https://user-images.githubusercontent.com/4194546/33479780-a6b8dd88-d68e-11e7-8341-8c56af080322.png)
 ![recepient-sc2](https://user-images.githubusercontent.com/4194546/33479798-b6ad33a6-d68e-11e7-8000-9f4199a076e9.png)
 
 ------- 
 
-Establishing call
+Established call
+
 ![caller sc 3](https://user-images.githubusercontent.com/4194546/33479816-c6bbee72-d68e-11e7-945c-0088e489f47f.png)
 ![rec sc 3](https://user-images.githubusercontent.com/4194546/33479820-c869f55c-d68e-11e7-80e3-e55efcd63709.png)
 
