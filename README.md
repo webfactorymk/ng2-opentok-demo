@@ -5,10 +5,12 @@ This is a demo application where you can see how ng2-opentok is used. The projec
 
 To make a video call open two tabs:
   * Caller tab `http://localhost:4200/caller`
-![caller-sc1](https://user-images.githubusercontent.com/4194546/33480016-9d64ff04-d68f-11e7-98bb-3ae7d1199af1.png)
+ 
+  * ![caller-sc1](https://user-images.githubusercontent.com/4194546/33480016-9d64ff04-d68f-11e7-98bb-3ae7d1199af1.png)
 
   * Recepient tab `http://localhost:4200/recepient`
-![recepient sc1](https://user-images.githubusercontent.com/4194546/33479739-7f81d51c-d68e-11e7-811e-390cf09bef32.png)
+ 
+  * ![recepient sc1](https://user-images.githubusercontent.com/4194546/33479739-7f81d51c-d68e-11e7-811e-390cf09bef32.png)
 
 You can use the two views to test:
  * making/ending a video call
