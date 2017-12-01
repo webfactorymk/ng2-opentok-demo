@@ -13,7 +13,8 @@ To make a video call open two tabs:
     ![recepient sc1](https://user-images.githubusercontent.com/4194546/33479739-7f81d51c-d68e-11e7-811e-390cf09bef32.png)
 
 You can use the two views to test:
- * making/ending a video call
+
+ * #### making/ending a video call
   
   Calling
   
@@ -27,16 +28,18 @@ Established call
 ![caller sc 3](https://user-images.githubusercontent.com/4194546/33479816-c6bbee72-d68e-11e7-945c-0088e489f47f.png)
 ![rec sc 3](https://user-images.githubusercontent.com/4194546/33479820-c869f55c-d68e-11e7-80e3-e55efcd63709.png)
 
-* send text message to the other user
+* #### send text message to the other user
 
 ![caller sc 4](https://user-images.githubusercontent.com/4194546/33479854-f18df4c4-d68e-11e7-9b01-a70b82fd4454.png)
 
 ![rec sc 4](https://user-images.githubusercontent.com/4194546/33479863-f6d7d24c-d68e-11e7-8c16-d48c54f99ef2.png)
 
-* get a sceenshot from the other user
+* #### get a sceenshot from the other user
+
 ![screenshot buddy 5](https://user-images.githubusercontent.com/4194546/33479912-2cc8a890-d68f-11e7-8af6-0d211bdb3417.png)
 
- * add/remove your video stream
+ * #### add/remove your video stream
+ 
  ![rc remove video](https://user-images.githubusercontent.com/4194546/33479979-7251af9c-d68f-11e7-8211-d354f17d5a29.png)
 ![caller removce video st](https://user-images.githubusercontent.com/4194546/33479978-6fdd2732-d68f-11e7-9e7a-7bff8926e518.png)
 
